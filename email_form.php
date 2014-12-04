@@ -11,15 +11,16 @@ class email_form extends moodleform {
                $this->option_display($user).'</option>';
     }
 
-    private function option_display($user, $no_section, $users_to_groups, $overwritefullname) {
-        if (empty($users_to_groups[$user->id])) {
-            $groups = $no_section;
+    private function option_display($user) {
+
+        if (empty($this->users_to_groups[$user->id])) {
+            $groups = $this->no_section;
         } else {
             $only_names = function($group) { return $group->name; };
-            $groups = implode(',', array_map($only_names, $users_to_groups[$user->id]));
+            $groups = implode(',', array_map($only_names, $this->users_to_groups[$user->id]));
         }
 
-        if ($overwritefullname) {
+        if ($this->overwritefullname) {
             $fullname = $user->firstname . ' ' . $user->lastname;
             $fullname = trim($fullname);
         } else {
@@ -29,13 +30,14 @@ class email_form extends moodleform {
         return sprintf("%s (%s)", $fullname, $groups);
     }
 
-    private function option_value($user, $users_to_groups, $users_to_roles) {
+    private function option_value($user) {
+
         $only_sn = function($role) { return $role->shortname; };
         $is_numeric = is_numeric($user->id);
-        if (!$is_numeric) { 
+        if (!$is_numeric) {
            $roles = NULL;
-        } else { 
-            $roles = implode(',', array_map($only_sn, $users_to_roles[$user->id]));
+        } else {
+            $roles = implode(',', array_map($only_sn, $this->users_to_roles[$user->id]));
         }
 
         // everyone defaults to none
@@ -43,11 +45,11 @@ class email_form extends moodleform {
             $roles .= ',none';
         }
 
-        if (empty($users_to_groups[$user->id])) {
+        if (empty($this->users_to_groups[$user->id])) {
             $groups = 0;
         } else {
             $only_id = function($group) { return $group->id; };
-            $groups = implode(',', array_map($only_id, $users_to_groups[$user->id]));
+            $groups = implode(',', array_map($only_id, $this->users_to_groups[$user->id]));
             $groups .= ',all';
         }
             $groups .= ',1';
@@ -87,15 +89,15 @@ class email_form extends moodleform {
         }
 
         $config = quickmail::load_config($COURSE->id);
-        $no_section = quickmail::_s('no_section');
-        $group_options[0] = $no_section;
+        $this->no_section = quickmail::_s('no_section');
+        $group_options[0] = $this->no_section;
         $group_options[1] = "All Users";
         $user_options = array();
-        $users_to_groups = $this->_customdata['users_to_groups'];
-        $users_to_roles = $this->_customdata['users_to_roles'];
-        $overwritefullname = !empty($config['overwritefullname']);
+        $this->users_to_groups = $this->_customdata['users_to_groups'];
+        $this->users_to_roles = $this->_customdata['users_to_roles'];
+        $this->overwritefullname = !empty($config['overwritefullname']);
         foreach ($this->_customdata['users'] as $user) {
-            $user_options[$this->option_value($user, $users_to_groups, $users_to_roles)] = $this->option_display($user, $no_section, $users_to_groups, $overwritefullname);
+            $user_options[$this->option_value($user)] = $this->option_display($user);
         }
 
         $links = array();
