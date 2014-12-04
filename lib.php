@@ -438,7 +438,7 @@ abstract class quickmail {
         $valids = array();
 
         foreach($rs_valids as $rsv){
-            $valids[] = $rsv;
+            $valids[$rsv->id] = $rsv;
         }
 
         //required to close the recordset
