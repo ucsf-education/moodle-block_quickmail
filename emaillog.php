@@ -61,6 +61,8 @@ $header = quickmail::_s($type);
 
 $PAGE->set_context($context);
 $PAGE->set_course($course);
+$PAGE->set_url(new moodle_url('/blocks/quickmail/emaillog.php', array('courseid' => $courseid)));
+
 $PAGE->navbar->add($blockname);
 $PAGE->navbar->add($header);
 $PAGE->set_title($blockname . ': ' . $header);
