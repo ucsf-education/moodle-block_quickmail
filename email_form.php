@@ -87,11 +87,9 @@ class email_form extends moodleform {
         foreach ($this->_customdata['groups'] as $group) {
             $group_options[$group->id] = $group->name;
         }
-
         $config = quickmail::load_config($COURSE->id);
-        $this->no_section = quickmail::_s('no_section');
-        $group_options[0] = $this->no_section;
-        $group_options[1] = "All Users";
+        $group_options[0] = quickmail::_s('no_section');
+        $group_options[1] = quickmail::_s('allusers');
         $user_options = array();
         $this->users_to_groups = $this->_customdata['users_to_groups'];
         $this->users_to_roles = $this->_customdata['users_to_roles'];
@@ -204,7 +202,7 @@ class email_form extends moodleform {
         
         $mform->addElement('text', 'additional_emails', quickmail::_s('additional_emails'), array('style'=>'width: 50%;'));
         $mform->setType('additional_emails', PARAM_TEXT);                
-        $mform->addRule('additional_emails', 'One or more email addresses is invalid', 'callback', 'mycallback', 'client');
+        $mform->addRule('additional_emails', 'One or more email addresses is invalid', 'callback', 'block_quickmail_mycallback', 'client');
         $mform->addHelpButton('additional_emails', 'additional_emails', 'block_quickmail');
         $mform->addElement(
             'filemanager', 'attachments', quickmail::_s('attachment'),

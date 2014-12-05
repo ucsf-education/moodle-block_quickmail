@@ -68,7 +68,7 @@ $PAGE->navbar->add($header);
 $PAGE->set_title($blockname . ': ' . $header);
 $PAGE->set_heading($blockname . ': ' . $header);
 $PAGE->set_pagetype($blockname);
-
+$PAGE->set_url($CFG->wwwroot . '/blocks/quickmail/emaillog.php');
 $dbtable = 'block_quickmail_' . $type;
 
 $params = array('userid' => $userid, 'courseid' => $courseid);
@@ -91,7 +91,7 @@ switch ($action) {
         $html = quickmail::list_entries($courseid, $type, $page, $perpage, $userid, $count, $can_delete);
 }
 
-if($courseid == 1) {
+if($courseid == SITEID) {
     $html.= html_writer::link(
         new moodle_url('/blocks/quickmail/admin_email.php'),
         quickmail::_s('composenew')
