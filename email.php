@@ -88,6 +88,8 @@ $respected_view = (
     $config['ferpa'] == 'courseferpa'
 );
 
+$mygroups = array();
+
 if ($restricted_view || $respected_view) {
     $mastercap = false;
     $mygroups = groups_get_user_groups($courseid);
@@ -96,7 +98,6 @@ if ($restricted_view || $respected_view) {
             array() :
             $DB->get_records_select('groups', 'id IN (' . $gids . ')');
 }
-
 $globalaccess = empty($allgroups);
 
 // Fill the course users by

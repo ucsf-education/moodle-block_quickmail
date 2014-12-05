@@ -434,16 +434,14 @@ abstract class quickmail {
 
         //let's use a recordset in case the enrollment is huge
         $rs_valids = $DB->get_recordset_sql($sql, array($courseid, $context->id, $courseid));
-
         $valids = array();
 
         foreach($rs_valids as $rsv){
-            $valids[$rsv->id] = $rsv;
+            $valids[] = $rsv;
         }
 
         //required to close the recordset
         $rs_valids->close();
-
         return $valids;
     }
     
