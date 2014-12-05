@@ -113,7 +113,9 @@ foreach ($everyone as $user) {
     }
 
     if (!empty($user->gid)) {
-        if ($globalaccess or $mastercap or in_array($user->gid, $mygroups)) {
+        if ($globalaccess or $mastercap or in_array($user->gid, $mygroups[0])) {
+            mtrace(sprintf("adding group %d to array<br/>", $user->gid));
+
             $users_to_groups[$user->id][] = $allgroups[$user->gid];
         }
     }

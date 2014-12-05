@@ -91,6 +91,7 @@ class email_form extends moodleform {
         $group_options[0] = quickmail::_s('no_section');
         $group_options[1] = quickmail::_s('allusers');
         $user_options = array();
+        $this->no_section = quickmail::_s('no_section');
         $this->users_to_groups = $this->_customdata['users_to_groups'];
         $this->users_to_roles = $this->_customdata['users_to_roles'];
         $this->overwritefullname = !empty($config['overwritefullname']);
