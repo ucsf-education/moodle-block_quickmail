@@ -105,7 +105,6 @@ $users = array();
 $users_to_roles = array();
 $users_to_groups = array();
 $studentsonly = !empty($config['studentsonly']);
-
 $everyone = quickmail::get_non_suspended_users($context, $courseid, $studentsonly);
 
 foreach ($everyone as $user) {
@@ -137,10 +136,10 @@ foreach ($everyone as $user) {
         empty($users_to_groups) or empty($filterd) or $user->id == $USER->id) {
             continue;
     }
-
     $users_to_roles[$user->id] = $filterd;
     $users[$user->id] = $user;
 }
+$everyone = $users;
 
 if (empty($users)) {
     print_error('no_usergroups', 'block_quickmail');
