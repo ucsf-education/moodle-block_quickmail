@@ -88,7 +88,7 @@ $respected_view = (
     $config['ferpa'] == 'courseferpa'
 );
 
-$mygroups = array();
+$mygroups = array(array());
 
 if ($restricted_view || $respected_view) {
     $mastercap = false;
@@ -106,8 +106,12 @@ $users_to_roles = array();
 $users_to_groups = array();
 $studentsonly = !empty($config['studentsonly']);
 $everyone = quickmail::get_non_suspended_users($context, $courseid, $studentsonly);
+$usergroups = groups_get_user_groups($courseid, $USER->id);
 
 foreach ($everyone as $user) {
+    if(isset($user->gid) && !in_array($user->gid, $usergroups[0])){
+        continue;
+    }
     if (empty($users_to_groups[$user->id])) {
         $users_to_groups[$user->id] = array();
     }
