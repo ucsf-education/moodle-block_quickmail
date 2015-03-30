@@ -261,6 +261,9 @@ if ($form->is_cancelled()) {
 
                 
             }
+            // Prepare html content of message
+            $data->message = file_rewrite_pluginfile_urls($data->message, 'pluginfile.php', $context->id, 'block_quickmail', $table, $data->id, $editor_options);
+
             if(empty($signaturetext)){
                 $data->messageWithSigAndAttach = $data->message;
             }
@@ -271,9 +274,7 @@ if ($form->is_cancelled()) {
                 $data->messageWithSigAndAttach .= quickmail::process_attachments(
                     $context, $data, $table, $data->id
                 );
-            // Prepare html content of message
-            $data->message = file_rewrite_pluginfile_urls($data->message, 'pluginfile.php', $context->id, 'block_quickmail', $table, $data->id, $editor_options);
-
+            
             // Same user, alternate email
             if (!empty($data->alternateid)) {
                 $user = clone($USER);

@@ -1,4 +1,4 @@
-@block @block_quickmail
+@block @block_quickmail_admin_email_feature
 Feature: Verify Admin behavior for Quickmail
   In order to communicate with classes of Moodle users
     As an admin
