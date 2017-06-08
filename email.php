@@ -128,8 +128,17 @@ foreach ($everyone as $userid => $user) {
     }
 }
 
+// if we have no users to email, show an error page with explanation and a link back
 if (empty($users)) {
-    print_error('no_usergroups', 'block_quickmail');
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($blockname);
+    echo $OUTPUT->notification(quickmail::_s('no_usergroups'), 'notifyproblem');
+    
+    echo html_writer::start_tag('div', array('class' => 'no-overflow'));
+    echo html_writer::link(new moodle_url('/course/view.php', ['id' => $courseid]), 'Back to previous page', null);
+    echo html_writer::end_tag('div');
+    
+    echo $OUTPUT->footer();
 }
 
 // we are presenting the form with values populated from either the log or drafts table in the db
@@ -315,7 +324,7 @@ if ($form->is_cancelled()) {
                 foreach ($additional_email_array as $additional_email) {
                     $additional_email = trim($additional_email); 
 
-                    $fakeuser = new object();
+                    $fakeuser = new stdClass();
                     $fakeuser->id = 99999900 + $i;
                     $fakeuser->email = $additional_email;
                     // TODO make this into a menu option
