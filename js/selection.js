@@ -50,7 +50,7 @@
     $("#add_all").click(move(potentials, mailed, '*'));
     $("#remove_button").click(move(mailed, potentials, ':selected'));
     $("#remove_all").click(move(mailed, potentials, '*'));
-    return $("#mform1").submit(function() {
+    return $(".mform").submit(function() {
       var ids, mapper;
       mapper = function(index, elem) {
         return $(elem).val().split(' ')[0];
