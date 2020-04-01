@@ -154,17 +154,17 @@ if (empty($users)) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($blockname);
     echo $OUTPUT->notification(quickmail::_s('no_usergroups'), 'notifyproblem');
-    
+
     echo html_writer::start_tag('div', array('class' => 'no-overflow'));
     echo html_writer::link(new moodle_url('/course/view.php', ['id' => $courseid]), get_string('back_to_previous', 'block_quickmail'), null);
     echo html_writer::end_tag('div');
-    
+
     echo $OUTPUT->footer();
 } else {
 
     // we are presenting the form with values populated from either the log or drafts table in the db
     if (!empty($type)) {
-        
+
         $email = $DB->get_record('block_quickmail_' . $type, array('id' => $typeid));
         //$emailmailto = array();
         if ($type == 'log') {
@@ -204,10 +204,10 @@ if (empty($users)) {
     $selected = array();
     if (!empty($email->mailto)) {
         foreach (explode(',', $email->mailto) as $id) {
-            $selected[$id] = (object) array('id'=>$id,'firstname'=>null,'lastname'=>null,'email'=>$id,'mailformat'=>'1','suspended'=>'0','maildisplay'=>'2','status'=>'0'); 
+            $selected[$id] = (object) array('id'=>$id,'firstname'=>null,'lastname'=>null,'email'=>$id,'mailformat'=>'1','suspended'=>'0','maildisplay'=>'2','status'=>'0');
             if(is_numeric($selected[$id]->id)) {
                 $selected[$id] = $users[$id];
-            } 
+            }
             unset($users[$id]);
         }
     }
@@ -230,7 +230,7 @@ if (empty($users)) {
     //
     if ($form->is_cancelled()) {
         redirect(new moodle_url('/course/view.php?id=' . $courseid));
-        // DWE we should check if we have selected users or emails around here. 
+        // DWE we should check if we have selected users or emails around here.
     } else if ($data = $form->get_data()) {
         if (empty($data->subject)) {
             $warnings[] = get_string('no_subject', 'block_quickmail');
@@ -328,7 +328,8 @@ if (empty($users)) {
                     foreach (explode(',', $data->mailto) as $userid) {
                         // Email gets sent here
                         if ($everyone[$userid]->value) { $everyone[$userid]->email = $everyone[$userid]->value; }
-                        $success = email_to_user($everyone[$userid], $user, $subject,$messagetext, $messagehtml);
+                        $success = email_to_user($everyone[$userid], $user, $subject,$messagetext, $messagehtml,
+	                        '', '', false, $user->email);
                         if (!$success) {
                             $warnings[] = get_string("no_email", 'block_quickmail', $everyone[$userid]);
                             $data->failuserids[] = $userid;
@@ -340,7 +341,7 @@ if (empty($users)) {
                 $additional_email_array = preg_split('/[,;]/', $data->additional_emails);
                     $i = 0;
                     foreach ($additional_email_array as $additional_email) {
-                        $additional_email = trim($additional_email); 
+                        $additional_email = trim($additional_email);
                         $fakeuser = new stdClass();
                         $fakeuser->id = 99999900 + $i;
                         $fakeuser->email = $additional_email;
@@ -360,7 +361,7 @@ if (empty($users)) {
                 $DB->update_record('block_quickmail_log', $data);
 
                 if ($data->receipt) {
-                    email_to_user($USER, $user, $subject, $messagetext, $messagehtml);
+                    email_to_user($USER, $user, $subject, $messagetext, $messagehtml, '', '', false, $user->email);
                 }
             }
         }
