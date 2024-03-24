@@ -58,8 +58,8 @@ $can_send = has_capability('block/quickmail:cansend', $context);
 
 $proper_permission = ($can_send or !empty($config['allowstudents']));
 
-//managers can delete by capability 'candelete'; 
-//those with 'cansend' (incl students, if $config['allowstudents']) can only delete drafts; 
+//managers can delete by capability 'candelete';
+//those with 'cansend' (incl students, if $config['allowstudents']) can only delete drafts;
 $can_delete = (has_capability('block/quickmail:candelete', $context) or ($can_send and $type == 'drafts') or ($proper_permission and $type == 'drafts'));
 
 // Stops students from tempering with history
@@ -118,7 +118,7 @@ if($courseid == SITEID) {
 } else {
     $html.= html_writer::link(
         new moodle_url(
-            '/blocks/quickmail/email.php', 
+            '/blocks/quickmail/email.php',
             array('courseid' => $courseid)),
         quickmail::_s('composenew')
     );
@@ -129,25 +129,25 @@ if($canimpersonate and $USER->id != $userid) {
     // http://docs.moodle.org/dev/Additional_name_fields
     $header .= ' for '. fullname($user);
 
-    
+
 }
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($header);
 
 if($canimpersonate) {
-    
+
     $get_name_string = 'u.firstname, u.lastname';
 
     if($CFG->version >= 2013111800){
-        $get_name_string = get_all_user_name_fields(true, 'u');
+        $get_name_string = block_quickmail_get_all_user_name_fields('u');
     }
     $sql = "SELECT DISTINCT(l.userid)," . $get_name_string . "
                 FROM {block_quickmail_$type} l,
                      {user} u
                 WHERE u.id = l.userid AND courseid = ? ORDER BY u.lastname";
 
-    $users = $DB->get_records_sql($sql, array($courseid));    
+    $users = $DB->get_records_sql($sql, array($courseid));
     $user_options = array_map(function($user) { return fullname($user); }, $users);
 
     $url = new moodle_url('emaillog.php', array(
