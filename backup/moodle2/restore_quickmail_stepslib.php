@@ -23,7 +23,7 @@
 
 class restore_quickmail_log_structure_step extends restore_structure_step {
     protected function define_structure() {
-        $paths = array();
+        $paths = [];
 
         $paths[] = new restore_path_element('block', '/block', true);
         $paths[] = new restore_path_element('log', '/block/emaillogs/log');
@@ -42,44 +42,44 @@ class restore_quickmail_log_structure_step extends restore_structure_step {
 
         // Delete current history, if any
         if ($overwrite) {
-            $params = array('courseid' => $this->get_courseid());
+            $params = ['courseid' => $this->get_courseid()];
             $DB->delete_records('block_quickmail_log', $params);
         }
 
         if ($restore and isset($data->emaillogs['log'])) {
             global $DB;
 
-            $current_context = context_course::instance($this->get_courseid());
+            $currentcontext = context_course::instance($this->get_courseid());
 
-            $params = array(
+            $params = [
                 'backupid' => $this->get_restoreid(),
                 'itemname' => 'context',
-                'newitemid' => $current_context->id
-            );
+                'newitemid' => $currentcontext->id,
+            ];
 
             $id = $DB->get_record('backup_ids_temp', $params)->itemid;
 
             foreach ($data->emaillogs['log'] as $log) {
-                $this->process_log($log, $id, $current_context);
+                $this->process_log($log, $id, $currentcontext);
             }
         }
 
-        if(isset($data->emaillogs['block_level_setting'])){
-            foreach ($data->emaillogs['block_level_setting'] as $block_level_setting) {
-                $this->process_block_level_setting($block_level_setting, $this->get_courseid());
+        if (isset($data->emaillogs['block_level_setting'])) {
+            foreach ($data->emaillogs['block_level_setting'] as $blocklevelsetting) {
+                $this->process_block_level_setting($blocklevelsetting, $this->get_courseid());
             }
         }
     }
 
 
-    protected function process_block_level_setting($block_level_setting, $courseid) {
+    protected function process_block_level_setting($blocklevelsetting, $courseid) {
         global $DB;
-        if($block_level_setting['name']){
-                //quickmail::default_config($courseid);
-                $config = new stdClass;
+        if ($blocklevelsetting['name']) {
+                // quickmail::default_config($courseid);
+                $config = new stdClass();
                 $config->coursesid = $courseid;
-                $config->name = $block_level_setting['name'];
-                $config->value = $block_level_setting['value'];
+                $config->name = $blocklevelsetting['name'];
+                $config->value = $blocklevelsetting['value'];
                 $DB->insert_record('block_quickmail_config', $config);
         }
     }
@@ -91,7 +91,7 @@ class restore_quickmail_log_structure_step extends restore_structure_step {
         $oldid = $log->id;
 
         $mailedusers = explode(',', $log->mailto);
-        $validusers = array();
+        $validusers = [];
 
         foreach ($mailedusers as $userid) {
             $validusers[] = $this->get_mappingid('user', $userid);
@@ -109,18 +109,22 @@ class restore_quickmail_log_structure_step extends restore_structure_step {
 
         $this->set_mapping('log', $oldid, $newid);
 
-        foreach (array('log', 'attachment_log') as $filearea) {
+        foreach (['log', 'attachment_log'] as $filearea) {
             restore_dbops::send_files_to_pool(
-                $this->get_basepath(), $this->get_restoreid(),
-                'block_quickmail', $filearea, $oldctx, $log->userid
+                $this->get_basepath(),
+                $this->get_restoreid(),
+                'block_quickmail',
+                $filearea,
+                $oldctx,
+                $log->userid
             );
 
             $sql = 'UPDATE {files} SET
                 itemid = :newid WHERE contextid = :ctxt AND itemid = :oldid';
 
-            $params = array(
-                'newid' => $newid, 'oldid' => $oldid, 'ctxt' => $context->id
-            );
+            $params = [
+                'newid' => $newid, 'oldid' => $oldid, 'ctxt' => $context->id,
+            ];
 
             $DB->execute($sql, $params);
         }

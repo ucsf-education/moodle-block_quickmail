@@ -31,23 +31,22 @@ interface quickmail_alternate_actions {
 }
 
 abstract class quickmail_alternate implements quickmail_alternate_actions {
-
-    private static function base_url($courseid, $additional= array()) {
-        $params = array('courseid' => $courseid) + $additional;
+    private static function base_url($courseid, $additional = []) {
+        $params = ['courseid' => $courseid] + $additional;
         return new moodle_url('/blocks/quickmail/alternate.php', $params);
     }
 
     public static function get($course) {
         global $DB;
 
-        $params = array('courseid' => $course->id);
+        $params = ['courseid' => $course->id];
         return $DB->get_records('block_quickmail_alternate', $params, 'valid DESC');
     }
 
     public static function get_one($id) {
         global $DB;
 
-        $params = array('id' => $id);
+        $params = ['id' => $id];
         return $DB->get_record('block_quickmail_alternate', $params, '*', MUST_EXIST);
     }
 
@@ -56,21 +55,21 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
 
         $email = self::get_one($id);
 
-        $confirm_url = self::base_url($course->id, array(
-            'id' => $email->id, 'action' => self::CONFIRMED
-        ));
+        $confirmurl = self::base_url($course->id, [
+            'id' => $email->id, 'action' => self::CONFIRMED,
+        ]);
 
-        $cancel_url = self::base_url($course->id);
+        $cancelurl = self::base_url($course->id);
 
-        return $OUTPUT->confirm(quickmail::_s('sure', $email), $confirm_url, $cancel_url);
+        return $OUTPUT->confirm(quickmail::_s('sure', $email), $confirmurl, $cancelurl);
     }
 
     public static function confirmed($course, $id) {
         global $DB;
 
-        $DB->delete_records('block_quickmail_alternate', array('id' => $id));
+        $DB->delete_records('block_quickmail_alternate', ['id' => $id]);
 
-        return redirect(self::base_url($course->id, array('flash' => 1)));
+        return redirect(self::base_url($course->id, ['flash' => 1]));
     }
 
     public static function verify($course, $id) {
@@ -81,25 +80,25 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         $value = optional_param('key', null, PARAM_TEXT);
         $userid = optional_param('activator', null, PARAM_INT);
 
-        $params = array(
+        $params = [
             'instance' => $course->id,
             'value' => $value,
             'userid' => $userid,
-            'script' => 'blocks/quickmail'
-        );
+            'script' => 'blocks/quickmail',
+        ];
 
-        $back_url = self::base_url($course->id);
+        $backurl = self::base_url($course->id);
 
         // Pass through already valid entries
         if ($entry->valid) {
-            redirect($back_url);
+            redirect($backurl);
         }
 
         // Verify key
         if (empty($value) or !$key = $DB->get_record('user_private_key', $params)) {
-            $reactivate = self::base_url($course->id, array(
-                'id' => $id, 'action' => self::INFORMATION
-            ));
+            $reactivate = self::base_url($course->id, [
+                'id' => $id, 'action' => self::INFORMATION,
+            ]);
 
             $html = $OUTPUT->notification(quickmail::_s('entry_key_not_valid', $entry));
             $html .= $OUTPUT->continue_button($reactivate);
@@ -115,7 +114,7 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         $entry->course = $course->fullname;
 
         $html = $OUTPUT->notification(quickmail::_s('entry_activated', $entry), 'notifysuccess');
-        $html .= $OUTPUT->continue_button($back_url);
+        $html .= $OUTPUT->continue_button($backurl);
 
         return $html;
     }
@@ -131,21 +130,21 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
 
         $url = self::base_url($course->id);
 
-        $approval_url = self::base_url($course->id, array(
+        $approvalurl = self::base_url($course->id, [
             'id' => $id, 'action' => self::VERIFY,
-            'activator' => $USER->id, 'key' => $value
-        ));
+            'activator' => $USER->id, 'key' => $value,
+        ]);
 
-        $a = new stdClass;
+        $a = new stdClass();
         $a->address = $entry->address;
-        $a->url = html_writer::link($approval_url, $approval_url->out());
+        $a->url = html_writer::link($approvalurl, $approvalurl->out());
         $a->course = $course->fullname;
         $a->fullname = fullname($USER);
 
         $from = quickmail::_s('alternate_from');
         $subject = quickmail::_s('alternate_subject');
-        $html_body = quickmail::_s('alternate_body', $a);
-        $body = strip_tags($html_body);
+        $htmlbody = quickmail::_s('alternate_body', $a);
+        $body = strip_tags($htmlbody);
 
         // Send email
         $user = clone($USER);
@@ -153,16 +152,16 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         $user->firstname = quickmail::_s('pluginname');
         $user->lastname = quickmail::_s('alternate');
 
-        $result = email_to_user($user, $from, $subject, $body, $html_body);
+        $result = email_to_user($user, $from, $subject, $body, $htmlbody);
 
         // Create the event, trigger it.
-        $event = \block_quickmail\event\alternate_email_added::create(array(
+        $event = \block_quickmail\event\alternate_email_added::create([
             'courseid' => $course->id,
             'context' => context_course::instance($course->id),
-            'other'    => array(
-                'address'=> $entry->address
-            )
-        ));
+            'other'    => [
+                'address' => $entry->address,
+            ],
+        ]);
         $event->trigger();
 
         $html = $OUTPUT->box_start();
@@ -181,9 +180,9 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
     }
 
     public static function interact($course, $id) {
-        $form = new quickmail_alternate_form(null, array(
-            'course' => $course, 'action' => self::INTERACT
-        ));
+        $form = new quickmail_alternate_form(null, [
+            'course' => $course, 'action' => self::INTERACT,
+        ]);
 
         if ($form->is_cancelled()) {
             redirect(self::base_url($course->id));
@@ -191,9 +190,9 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
             global $DB;
 
             // Check if email exists in this course
-            $older = $DB->get_record('block_quickmail_alternate', array(
-                'address' => $data->address, 'courseid' => $data->courseid
-            ));
+            $older = $DB->get_record('block_quickmail_alternate', [
+                'address' => $data->address, 'courseid' => $data->courseid,
+            ]);
 
             if ($older) {
                 $data->id = $older->id;
@@ -216,9 +215,9 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
 
             $action = $data->valid ? self::VERIFY : self::INFORMATION;
 
-            redirect(self::base_url($course->id, array(
-                'action' => $action, 'id' => $data->id
-            )));
+            redirect(self::base_url($course->id, [
+                'action' => $action, 'id' => $data->id,
+            ]));
         }
 
         if ($id) {
@@ -227,10 +226,10 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
 
         // MDL-31677
         $reflect = new ReflectionClass('quickmail_alternate_form');
-        $form_field = $reflect->getProperty('_form');
-        $form_field->setAccessible(true);
+        $formfield = $reflect->getProperty('_form');
+        $formfield->setAccessible(true);
 
-        return $form_field->getValue($form)->toHtml();
+        return $formfield->getValue($form)->toHtml();
     }
 
     public static function view($course) {
@@ -238,54 +237,53 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
 
         $alternates = self::get($course);
 
-        $new_url = self::base_url($course->id, array('action' => self::INTERACT));
+        $newurl = self::base_url($course->id, ['action' => self::INTERACT]);
 
         if (empty($alternates)) {
-
             $html = $OUTPUT->notification(quickmail::_s('no_alternates', $course));
-            $html .= $OUTPUT->continue_button($new_url);
+            $html .= $OUTPUT->continue_button($newurl);
             return $html;
         }
 
         $table = new html_table();
-        $table->head = array(
+        $table->head = [
             get_string('email'),
             quickmail::_s('valid'),
-            get_string('action')
-        );
+            get_string('action'),
+        ];
 
-        $approval = array(quickmail::_s('waiting'), quickmail::_s('approved'));
+        $approval = [quickmail::_s('waiting'), quickmail::_s('approved')];
 
-        $icons = array(
+        $icons = [
             self::INTERACT => $OUTPUT->pix_icon('i/edit', get_string('edit')),
-            self::DELETE => $OUTPUT->pix_icon('i/invalid', get_string('delete'))
-        );
+            self::DELETE => $OUTPUT->pix_icon('i/invalid', get_string('delete')),
+        ];
 
         foreach ($alternates as $email) {
-            $edit_url = self::base_url($course->id, array(
-                'action' => self::INTERACT, 'id' => $email->id
-            ));
+            $editurl = self::base_url($course->id, [
+                'action' => self::INTERACT, 'id' => $email->id,
+            ]);
 
-            $edit = html_writer::link($edit_url, $icons[self::INTERACT]);
+            $edit = html_writer::link($editurl, $icons[self::INTERACT]);
 
-            $delete_url = self::base_url($course->id, array(
-                'action' => self::DELETE, 'id' => $email->id
-            ));
+            $deleteurl = self::base_url($course->id, [
+                'action' => self::DELETE, 'id' => $email->id,
+            ]);
 
-            $delete = html_writer::link($delete_url, $icons[self::DELETE]);
+            $delete = html_writer::link($deleteurl, $icons[self::DELETE]);
 
-            $row = array(
+            $row = [
                 $email->address,
                 $approval[$email->valid],
-                implode(' | ', array($edit, $delete))
-            );
+                implode(' | ', [$edit, $delete]),
+            ];
 
             $table->data[] = new html_table_row($row);
         }
 
-        $new_link = html_writer::link($new_url, quickmail::_s('alternate_new'));
+        $newlink = html_writer::link($newurl, quickmail::_s('alternate_new'));
 
-        $html = html_writer::tag('div', $new_link, array('class' => 'new_link'));
+        $html = html_writer::tag('div', $newlink, ['class' => 'new_link']);
         $html .= $OUTPUT->box_start();
         $html .= html_writer::table($table);
         $html .= $OUTPUT->box_end();

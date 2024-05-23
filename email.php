@@ -33,18 +33,18 @@ $courseid = required_param('courseid', PARAM_INT);
 $type = optional_param('type', '', PARAM_ALPHA);
 $typeid = optional_param('typeid', 0, PARAM_INT);
 $sigid = optional_param('sigid', 0, PARAM_INT);
-$messageIDresend = optional_param('fmid', 0, PARAM_INT);
+$messageidresend = optional_param('fmid', 0, PARAM_INT);
 
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+if (!$course = $DB->get_record('course', ['id' => $courseid])) {
     print_error('no_course', 'block_quickmail', '', $courseid);
 }
 
-if (!empty($type) and !in_array($type, array('log', 'drafts'))) {
+if (!empty($type) and !in_array($type, ['log', 'drafts'])) {
     print_error('no_type', 'block_quickmail', '', $type);
 }
 
 if (!empty($type) and empty($typeid)) {
-    $string = new stdclass;
+    $string = new stdclass();
     $string->tpe = $type;
     $string->id = $typeid;
 
@@ -54,19 +54,19 @@ if (!empty($type) and empty($typeid)) {
 $config = quickmail::load_config($courseid);
 
 $context = context_course::instance($courseid);
-$has_permission = (
+$haspermission = (
         has_capability('block/quickmail:cansend', $context) or
         !empty($config['allowstudents'])
         );
 
-if (!$has_permission) {
+if (!$haspermission) {
     print_error('no_permission', 'block_quickmail');
 }
 
-$sigs = $DB->get_records('block_quickmail_signatures', array('userid' => $USER->id), 'default_flag DESC');
+$sigs = $DB->get_records('block_quickmail_signatures', ['userid' => $USER->id], 'default_flag DESC');
 
-$alt_params = array('courseid' => $course->id, 'valid' => 1);
-$alternates = $DB->get_records_menu('block_quickmail_alternate', $alt_params, '', 'id, address');
+$altparams = ['courseid' => $course->id, 'valid' => 1];
+$alternates = $DB->get_records_menu('block_quickmail_alternate', $altparams, '', 'id, address');
 
 $blockname = quickmail::_s('pluginname');
 $header = quickmail::_s('email');
@@ -77,18 +77,18 @@ $PAGE->navbar->add($blockname);
 $PAGE->navbar->add($header);
 $PAGE->set_title($blockname . ': ' . $header);
 $PAGE->set_heading($blockname . ': ' . $header);
-$PAGE->set_url('/blocks/quickmail/email.php', array('courseid' => $courseid));
+$PAGE->set_url('/blocks/quickmail/email.php', ['courseid' => $courseid]);
 $PAGE->set_pagetype(quickmail::PAGE_TYPE);
 $PAGE->set_pagelayout('standard');
 
 $PAGE->requires->jquery();
 $PAGE->requires->js('/blocks/quickmail/js/selection.js');
 
-$course_roles = get_roles_used_in_context($context);
+$courseroles = get_roles_used_in_context($context);
 
-$filter_roles = $DB->get_records_select('role', sprintf('id IN (%s)', $config['roleselection']));
+$filterroles = $DB->get_records_select('role', sprintf('id IN (%s)', $config['roleselection']));
 
-$roles = quickmail::filter_roles($course_roles, $filter_roles);
+$roles = quickmail::filter_roles($courseroles, $filterroles);
 
 $allgroups = groups_get_all_groups($courseid);
 
@@ -96,32 +96,32 @@ $mastercap = true;
 $groups = $allgroups;
 $attributes = null;
 
-$restricted_view = (
+$restrictedview = (
     !has_capability('moodle/site:accessallgroups', $context) and
     $config['ferpa'] == 'strictferpa'
 );
 
-$respected_view = (
+$respectedview = (
     !has_capability('moodle/site:accessallgroups', $context) and
     $course->groupmode == 1 and
     $config['ferpa'] == 'courseferpa'
 );
 
-if ($restricted_view || $respected_view) {
+if ($restrictedview || $respectedview) {
     $mastercap = false;
     $mygroups = groups_get_user_groups($courseid);
     $gids = implode(',', array_values($mygroups['0']));
     $groups = empty($gids) ?
-            array() :
+            [] :
             $DB->get_records_select('groups', 'id IN (' . $gids . ')');
 }
 
 $globalaccess = empty($allgroups);
 
 // Fill the course users by
-$users = array();
-$users_to_roles = array();
-$users_to_groups = array();
+$users = [];
+$userstoroles = [];
+$userstogroups = [];
 
 $everyone = quickmail::get_non_suspended_users($context, $courseid);
 
@@ -136,14 +136,19 @@ foreach ($everyone as $userid => $user) {
     $filterd = quickmail::filter_roles($userroles, $roles);
 
     // Available groups
-    if ((!$globalaccess and !$mastercap) and
-        empty($gids) or empty($filterd) or $userid == $USER->id)
+    if (
+        (!$globalaccess and !$mastercap) and
+        empty($gids) or empty($filterd) or $userid == $USER->id
+    ) {
         continue;
+    }
 
-    $groupmapper = function($id) use ($allgroups) { return $allgroups[$id]; };
+    $groupmapper = function ($id) use ($allgroups) {
+        return $allgroups[$id];
+    };
 
-    $users_to_groups[$userid] = array_map($groupmapper, $gids);
-    $users_to_roles[$userid] = $filterd;
+    $userstogroups[$userid] = array_map($groupmapper, $gids);
+    $userstoroles[$userid] = $filterd;
     if (!$user->suspended) {
         $users[$userid] = $user;
     }
@@ -155,57 +160,61 @@ if (empty($users)) {
     echo $OUTPUT->heading($blockname);
     echo $OUTPUT->notification(quickmail::_s('no_usergroups'), 'notifyproblem');
 
-    echo html_writer::start_tag('div', array('class' => 'no-overflow'));
+    echo html_writer::start_tag('div', ['class' => 'no-overflow']);
     echo html_writer::link(new moodle_url('/course/view.php', ['id' => $courseid]), get_string('back_to_previous', 'block_quickmail'), null);
     echo html_writer::end_tag('div');
 
     echo $OUTPUT->footer();
 } else {
-
     // we are presenting the form with values populated from either the log or drafts table in the db
     if (!empty($type)) {
-
-        $email = $DB->get_record('block_quickmail_' . $type, array('id' => $typeid));
-        //$emailmailto = array();
+        $email = $DB->get_record('block_quickmail_' . $type, ['id' => $typeid]);
+        // $emailmailto = array();
         if ($type == 'log') {
-            $attributes = array ('id' => "{$typeid}_id_message_editor");
+            $attributes = ['id' => "{$typeid}_id_message_editor"];
         }
 
-        if ($messageIDresend == 1) {
-            list($email->mailto, $email->additional_emails) = quickmail::clean($email->failuserids);
+        if ($messageidresend == 1) {
+            [$email->mailto, $email->additional_emails] = quickmail::clean($email->failuserids);
         }
     } else {
-        $email = new stdClass;
+        $email = new stdClass();
         $email->id = null;
     }
 
-    $email->messageformat =  editors_get_preferred_format();
-    $default_sigid = $DB->get_field('block_quickmail_signatures', 'id', array(
-        'userid' => $USER->id, 'default_flag' => 1
-    ));
-    $email->sigid = $default_sigid ? $default_sigid : -1;
+    $email->messageformat = editors_get_preferred_format();
+    $defaultsigid = $DB->get_field('block_quickmail_signatures', 'id', [
+        'userid' => $USER->id, 'default_flag' => 1,
+    ]);
+    $email->sigid = $defaultsigid ? $defaultsigid : -1;
 
     // Some setters for the form
     $email->type = $type;
     $email->typeid = $typeid;
 
-    $editor_options = array(
+    $editoroptions = [
         'trusttext' => false,
         'subdirs' => 1,
         'maxfiles' => EDITOR_UNLIMITED_FILES,
         'accepted_types' => '*',
-        'context' => $context
-    );
+        'context' => $context,
+    ];
 
     $email = file_prepare_standard_editor(
-        $email, 'message', $editor_options, $context, 'block_quickmail', $type, $email->id
+        $email,
+        'message',
+        $editoroptions,
+        $context,
+        'block_quickmail',
+        $type,
+        $email->id
     );
 
-    $selected = array();
+    $selected = [];
     if (!empty($email->mailto)) {
         foreach (explode(',', $email->mailto) as $id) {
-            $selected[$id] = (object) array('id'=>$id,'firstname'=>null,'lastname'=>null,'email'=>$id,'mailformat'=>'1','suspended'=>'0','maildisplay'=>'2','status'=>'0');
-            if(is_numeric($selected[$id]->id)) {
+            $selected[$id] = (object) ['id' => $id, 'firstname' => null, 'lastname' => null, 'email' => $id, 'mailformat' => '1', 'suspended' => '0', 'maildisplay' => '2', 'status' => '0'];
+            if (is_numeric($selected[$id]->id)) {
                 $selected[$id] = $users[$id];
             }
             unset($users[$id]);
@@ -213,21 +222,22 @@ if (empty($users)) {
     }
 
 
-    $form = new email_form(null, array(
-        'editor_options' => $editor_options,
+    $form = new email_form(null, [
+        'editor_options' => $editoroptions,
         'selected' => $selected,
         'users' => $users,
         'roles' => $roles,
         'groups' => $groups,
-        'users_to_roles' => $users_to_roles,
-        'users_to_groups' => $users_to_groups,
-        'sigs' => array_map(function($sig) { return $sig->title; }, $sigs),
+        'users_to_roles' => $userstoroles,
+        'users_to_groups' => $userstogroups,
+        'sigs' => array_map(function ($sig) {
+            return $sig->title;
+        }, $sigs),
         'alternates' => $alternates,
-        'attributes' => $attributes
-    ));
+        'attributes' => $attributes,
+    ]);
 
-    $warnings = array();
-    //
+    $warnings = [];
     if ($form->is_cancelled()) {
         redirect(new moodle_url('/course/view.php?id=' . $courseid));
         // DWE we should check if we have selected users or emails around here.
@@ -260,7 +270,13 @@ if (empty($users)) {
                 }
             }
             $data = file_postupdate_standard_editor(
-                $data, 'message', $editor_options, $context, 'block_quickmail', $table, $data->id
+                $data,
+                'message',
+                $editoroptions,
+                $context,
+                'block_quickmail',
+                $table,
+                $data->id
             );
             $DB->update_record('block_quickmail_' . $table, $data);
 
@@ -273,7 +289,12 @@ if (empty($users)) {
 
             // An instance id is needed before storing the file repository /////////
             file_save_draft_area_files(
-                    $data->attachments, $context->id, 'block_quickmail', 'attachment_' . $table, $data->id, $editor_options
+                $data->attachments,
+                $context->id,
+                'block_quickmail',
+                'attachment_' . $table,
+                $data->id,
+                $editoroptions
             );
 
             // Send emails /////////////////////////////////////////////////////////
@@ -284,25 +305,27 @@ if (empty($users)) {
                 // deal with possible signature, will be appended to message in a little bit.
                 if (!empty($sigs) and $data->sigid > -1) {
                     $sig = $sigs[$data->sigid];
-                    $signaturetext = file_rewrite_pluginfile_urls($sig->signature, 'pluginfile.php', $context->id, 'block_quickmail', 'signature', $sig->id, $editor_options);
+                    $signaturetext = file_rewrite_pluginfile_urls($sig->signature, 'pluginfile.php', $context->id, 'block_quickmail', 'signature', $sig->id, $editoroptions);
                 }
 
                 // Prepare html content of message /////////////////////////////////
-                $data->message = file_rewrite_pluginfile_urls($data->message, 'pluginfile.php', $context->id, 'block_quickmail', $table, $data->id, $editor_options);
+                $data->message = file_rewrite_pluginfile_urls($data->message, 'pluginfile.php', $context->id, 'block_quickmail', $table, $data->id, $editoroptions);
 
-                if(empty($signaturetext)){
+                if (empty($signaturetext)) {
                     $data->messageWithSigAndAttach = $data->message;
-                }
-                else{
-                    if($data->format == 0 || $data->format == 2 ){
-                        $data->messageWithSigAndAttach = $data->message . "\n\n" .$signaturetext;
-                    }else{
-                        $data->messageWithSigAndAttach = $data->message . "<br /> <br /> <p></p>" .$signaturetext;
+                } else {
+                    if ($data->format == 0 || $data->format == 2) {
+                        $data->messageWithSigAndAttach = $data->message . "\n\n" . $signaturetext;
+                    } else {
+                        $data->messageWithSigAndAttach = $data->message . "<br /> <br /> <p></p>" . $signaturetext;
                     }
                 }
                 // Append links to attachments, if any /////////////////////////////
                     $data->messageWithSigAndAttach .= quickmail::process_attachments(
-                        $context, $data, $table, $data->id
+                        $context,
+                        $data,
+                        $table,
+                        $data->id
                     );
 
                 // Same user, alternate email //////////////////////////////////////
@@ -312,7 +335,7 @@ if (empty($users)) {
                 } else {
                     $user = $USER;
                 }
-                $data->failuserids = array();
+                $data->failuserids = [];
                 // DWE -> Begin hopefully new way of dealing with messagetext and messagehtml
 
                 // TEXT
@@ -320,16 +343,26 @@ if (empty($users)) {
                 $messagetext = format_text_email($data->messageWithSigAndAttach, $data->format);
 
                 // HTML
-                $options = array('filter' => false);
+                $options = ['filter' => false];
                 $messagehtml = format_text($data->messageWithSigAndAttach, $data->format, $options);
 
-                if(!empty($data->mailto)) {
-
+                if (!empty($data->mailto)) {
                     foreach (explode(',', $data->mailto) as $userid) {
                         // Email gets sent here
-                        if ($everyone[$userid]->value) { $everyone[$userid]->email = $everyone[$userid]->value; }
-                        $success = email_to_user($everyone[$userid], $user, $subject,$messagetext, $messagehtml,
-	                        '', '', false, $user->email);
+                        if ($everyone[$userid]->value) {
+                            $everyone[$userid]->email = $everyone[$userid]->value;
+                        }
+                        $success = email_to_user(
+                            $everyone[$userid],
+                            $user,
+                            $subject,
+                            $messagetext,
+                            $messagehtml,
+                            '',
+                            '',
+                            false,
+                            $user->email
+                        );
                         if (!$success) {
                             $warnings[] = get_string("no_email", 'block_quickmail', $everyone[$userid]);
                             $data->failuserids[] = $userid;
@@ -337,25 +370,25 @@ if (empty($users)) {
                     }
                 }
 
-            if(!empty($data->additional_emails)){
-                $additional_email_array = preg_split('/[,;]/', $data->additional_emails);
+                if (!empty($data->additional_emails)) {
+                    $additionalemailarray = preg_split('/[,;]/', $data->additional_emails);
                     $i = 0;
-                    foreach ($additional_email_array as $additional_email) {
-                        $additional_email = trim($additional_email);
+                    foreach ($additionalemailarray as $additionalemail) {
+                        $additionalemail = trim($additionalemail);
                         $fakeuser = new stdClass();
                         $fakeuser->id = 99999900 + $i;
-                        $fakeuser->email = $additional_email;
+                        $fakeuser->email = $additionalemail;
                         // TODO make this into a menu option
                         $fakeuser->mailformat = 1;
-                        $additional_email_success = email_to_user($fakeuser, $user, $subject, $messagetext, $messagehtml);
-                        if (!$additional_email_success) {
-                            $data->failuserids[] = $additional_email;
+                        $additionalemailsuccess = email_to_user($fakeuser, $user, $subject, $messagetext, $messagehtml);
+                        if (!$additionalemailsuccess) {
+                            $data->failuserids[] = $additionalemail;
                             // will need to notify that an email is incorrect
                             $warnings[] = get_string("no_email_address", 'block_quickmail', $fakeuser->email);
                         }
                         $i++;
                     }
-            }
+                }
 
                 $data->failuserids = implode(',', $data->failuserids);
                 $DB->update_record('block_quickmail_log', $data);
@@ -372,7 +405,11 @@ if (empty($users)) {
         if (!empty($type)) {
             $attachid = file_get_submitted_draft_itemid('attachment');
             file_prepare_draft_area(
-                $attachid, $context->id, 'block_quickmail', 'attachment_' . $type, $typeid
+                $attachid,
+                $context->id,
+                'block_quickmail',
+                'attachment_' . $type,
+                $typeid
             );
             $email->attachments = $attachid;
         }
@@ -381,7 +418,7 @@ if (empty($users)) {
     $form->set_data($email);
     if (empty($warnings)) {
         if (isset($email->send)) {
-            redirect(new moodle_url('/blocks/quickmail/emaillog.php', array('courseid' => $course->id)));
+            redirect(new moodle_url('/blocks/quickmail/emaillog.php', ['courseid' => $course->id]));
         } else if (isset($email->draft)) {
             $warnings['success'] = get_string("changessaved");
         }
@@ -395,7 +432,7 @@ if (empty($users)) {
         echo $OUTPUT->notification($warning, $class);
     }
 
-    echo html_writer::start_tag('div', array('class' => 'no-overflow'));
+    echo html_writer::start_tag('div', ['class' => 'no-overflow']);
     $form->display();
     echo html_writer::end_tag('div');
     echo $OUTPUT->footer();

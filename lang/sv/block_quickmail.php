@@ -18,7 +18,7 @@
 /**
  * Swedish language pack by Linnaeus University
  *
- * @package    block
+ * @package    block_quickmail
  * @subpackage quickmail
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

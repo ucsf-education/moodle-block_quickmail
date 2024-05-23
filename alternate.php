@@ -31,7 +31,7 @@ $action = optional_param('action', 'view', PARAM_TEXT);
 $id = optional_param('id', null, PARAM_INT);
 $flash = optional_param('flash', 0, PARAM_INT);
 
-$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 
 $context = context_course::instance($courseid);
 // Permission
@@ -42,7 +42,7 @@ $blockname = quickmail::_s('pluginname');
 $heading = quickmail::_s('alternate');
 $title = "$blockname: $heading";
 
-$url = new moodle_url('/blocks/quickmail/alternate.php', array('courseid' => $courseid));
+$url = new moodle_url('/blocks/quickmail/alternate.php', ['courseid' => $courseid]);
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);

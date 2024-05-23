@@ -34,41 +34,41 @@ class alternate_email_added extends \core\event\base {
 
     /**
      * Returns name of the event.
-     * 
+     *
      * @return string
      */
     public static function get_name() {
         return get_string('eventalternateemailadded', 'block_quickmail');
     }
- 
+
     /**
      * Returns info on when a user with ID has viwed a control panel module (tab).
-     * 
+     *
      * @return string
      */
     public function get_description() {
         return "The user with id '{$this->userid}' has added an alternate email  "
             . "{$this->other['address']}.";
     }
- 
+
     /**
      * Returns URL of the event.
-     * 
+     *
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/blocks/quickmail/alternate.php', array(
-                    'courseid' => $this->courseid
-                ));
+        return new \moodle_url('/blocks/quickmail/alternate.php', [
+                    'courseid' => $this->courseid,
+                ]);
     }
- 
+
     /**
      * Legacy log.
-     * 
+     *
      * @return array
      */
     public function get_legacy_logdata() {
-        return array($this->courseid, 'quickmail', 'add', $this->get_url(),
-            get_string('alternate', 'block_quickmail') . ' ' . $this->other['address']);
+        return [$this->courseid, 'quickmail', 'add', $this->get_url(),
+            get_string('alternate', 'block_quickmail') . ' ' . $this->other['address']];
     }
 }

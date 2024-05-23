@@ -43,7 +43,7 @@ $string['delete_confirm'] = 'Are you sure you want to delete message with the fo
 $string['title'] = 'Title';
 $string['no'] = 'No';
 $string['new'] = 'New';
-$string['sig'] ='Signature';
+$string['sig'] = 'Signature';
 $string['default_flag'] = 'Default';
 $string['config'] = 'Configuration';
 $string['downloads'] = 'Require login for attachments';
@@ -152,7 +152,7 @@ $string['user'] = 'user';
 
 $string['draftssuccess'] = "Draft";
 
-//admin
+// admin
 $string['sendadmin'] = 'Send Admin Email';
 $string['noreply'] = 'No-Reply';
 $string['body'] = 'Body';
@@ -163,7 +163,7 @@ $string['messageprovider:broadcast'] = 'Send broadcast messages using Admin Emai
 $string['message_sent_to'] = 'Message sent to ';
 $string['warnings'] = 'Warnings';
 $string['message_body_as_follows'] = 'message body as follows ';
-$string['sent_successfully_to_the_following_users'] = 'sent successfully to the following users: ' ;
+$string['sent_successfully_to_the_following_users'] = 'sent successfully to the following users: ';
 $string['seconds'] = 'seconds';
 $string['admin_email_send_receipt'] = 'Admin Email Send Receipt';
 $string['something_broke'] = 'It looks like you either have email sending disabled or things are very broken';
