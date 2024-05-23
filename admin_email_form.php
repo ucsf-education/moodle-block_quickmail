@@ -15,17 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Admin email form.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once $CFG->libdir . '/formslib.php';
-// describe the form created for admin_emial.php
-class admin_email_form extends moodleform {
-    function definition() {
+defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->libdir . '/formslib.php');
+
+/**
+ * Admin email form.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class admin_email_form extends moodleform {
+    /**
+     * Form definition.
+     */
+    public function definition(): void {
         $mform =& $this->_form;
 
         $mform->addElement('text', 'subject', get_string('subject', 'block_quickmail'));
@@ -34,7 +48,13 @@ class admin_email_form extends moodleform {
         $mform->addElement('text', 'noreply', get_string('noreply', 'block_quickmail'));
         $mform->setType('noreply', PARAM_EMAIL);
 
-        $mform->addElement('editor', 'message_editor', get_string('body', 'block_quickmail'), null, $this->_customdata['editor_options']);
+        $mform->addElement(
+            'editor',
+            'message_editor',
+            get_string('body', 'block_quickmail'),
+            null,
+            $this->_customdata['editor_options']
+        );
         $mform->setType('message', PARAM_RAW);
 
         $buttons = [
@@ -48,7 +68,14 @@ class admin_email_form extends moodleform {
         $mform->addRule('message_editor', null, 'required');
     }
 
-    function validation($data, $files) {
+    /**
+     * Performs additional form validation steps.
+     *
+     * @param array $data Submitted form data.
+     * @param array $files Uploaded form files.
+     * @return array A list of validation errors.
+     */
+    public function validation($data, $files): array {
         $errors = [];
         foreach (['subject', 'message_editor'] as $field) {
             if (empty($data[$field])) {
