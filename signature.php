@@ -24,9 +24,10 @@
  */
 
 require_once('../../config.php');
-require_login();
 require_once('lib.php');
 require_once('signature_form.php');
+
+require_login();
 
 $courseid = required_param('courseid', PARAM_INT);
 $sigid = optional_param('id', 0, PARAM_INT);
