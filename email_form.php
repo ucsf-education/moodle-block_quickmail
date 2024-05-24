@@ -15,22 +15,45 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * The email form.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . '/formslib.php');
 $PAGE->requires->js('/blocks/quickmail/validation.js');
 
+/**
+ * The email form class.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class email_form extends moodleform {
-    private function reduce_users($in, $user) {
+    /**
+     * Returns an <option> element for a given user, appended to given markup.
+     * @param string $in The markup to prepend to the <option> element.
+     * @param stdClass $user A user record.
+     * @return string The <option> element, appended to the given markup.
+     */
+    private function reduce_users($in, $user): string {
         return $in . '<option value="' . $this->option_value($user) . '">' .
                $this->option_display($user) . '</option>';
     }
 
-    private function option_display($user) {
+    /**
+     * Returns the text for an <option> element of a given user.
+     * @param stdClass $user A user record.
+     * @return string The text.
+     */
+    private function option_display($user): string {
         $userstogroups = $this->_customdata['users_to_groups'];
 
         if (empty($userstogroups[$user->id])) {
@@ -45,7 +68,12 @@ class email_form extends moodleform {
         return sprintf("%s (%s)", fullname($user), $groups);
     }
 
-    private function option_value($user) {
+    /**
+     * Returns the value of an <option> element for a given user.
+     * @param stdClass $user The user record
+     * @return string The option value
+     */
+    private function option_value($user): string {
         $userstogroups = $this->_customdata['users_to_groups'];
         $userstoroles = $this->_customdata['users_to_roles'];
         $onlysn = function ($role) {
@@ -57,7 +85,7 @@ class email_form extends moodleform {
             $roles = implode(',', array_map($onlysn, $userstoroles[$user->id]));
         }
 
-        // everyone defaults to none
+        // Everyone defaults to none.
         if (is_numeric($user->id)) {
             $roles .= ',none';
         }
@@ -75,7 +103,14 @@ class email_form extends moodleform {
         return sprintf("%s %s %s", $user->id, $groups, $roles);
     }
 
-    public function definition() {
+    /**
+     * The form definition.
+     *
+     * @return void
+     * @throws coding_exception
+     * @throws moodle_exception
+     */
+    protected function definition(): void {
         global $CFG, $USER, $COURSE, $OUTPUT;
 
         $mform =& $this->_form;
@@ -130,7 +165,7 @@ class email_form extends moodleform {
         $config = quickmail::load_config($COURSE->id);
 
         $cansend = (
-            has_capability('block/quickmail:cansend', $context) or
+            has_capability('block/quickmail:cansend', $context) ||
             !empty($config['allowstudents'])
         );
 
@@ -219,11 +254,8 @@ class email_form extends moodleform {
         );
 
 
-        // DWE -> NON REQUIRED VERSION
+        // DWE -> NON REQUIRED VERSION.
         $table->data[] = new html_table_row([$selectedlabel, $rolefilterlabel]);
-
-
-        // $table->data[] = new html_table_row(array($selected_required_label, $role_filter_label));
         $table->data[] = new html_table_row([$selectfilter, $centerbuttons, $filters]);
 
         if (has_capability('block/quickmail:allowalternate', $context)) {
@@ -244,7 +276,13 @@ class email_form extends moodleform {
         if (!empty($CFG->block_quickmail_addionalemail)) {
             $mform->addElement('text', 'additional_emails', quickmail::_s('additional_emails'), ['style' => 'width: 50%;']);
             $mform->setType('additional_emails', PARAM_TEXT);
-            $mform->addRule('additional_emails', 'One or more email addresses is invalid', 'callback', 'block_quickmail_mycallback', 'client');
+            $mform->addRule(
+                'additional_emails',
+                'One or more email addresses is invalid',
+                'callback',
+                'block_quickmail_mycallback',
+                'client'
+            );
             $mform->addHelpButton('additional_emails', 'additional_emails', 'block_quickmail');
         }
         $mform->addElement(
