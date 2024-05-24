@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * The email history page.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
@@ -35,19 +37,19 @@ $perpage = optional_param('perpage', 10, PARAM_INT);
 $userid = optional_param('userid', $USER->id, PARAM_INT);
 
 if (!$course = $DB->get_record('course', ['id' => $courseid])) {
-    print_error('no_course', 'block_quickmail', '', $courseid);
+    throw new moodle_exception('no_course', 'block_quickmail', '', $courseid);
 }
 
 $context = context_course::instance($courseid);
 
-// Has to be in on of these
+// Has to be in on of these.
 if (!in_array($type, ['log', 'drafts'])) {
-    print_error('not_valid', 'block_quickmail', '', $type);
+    throw new moodle_exception('not_valid', 'block_quickmail', '', $type);
 }
 
 $canimpersonate = has_capability('block/quickmail:canimpersonate', $context);
-if (!$canimpersonate and $userid != $USER->id) {
-    print_error('not_valid_user', 'block_quickmail');
+if (!$canimpersonate && $userid != $USER->id) {
+    throw new moodle_exception('not_valid_user', 'block_quickmail');
 }
 
 $config = quickmail::load_config($courseid);
@@ -56,23 +58,26 @@ $validactions = ['delete', 'confirm'];
 
 $cansend = has_capability('block/quickmail:cansend', $context);
 
-$properpermission = ($cansend or !empty($config['allowstudents']));
+$properpermission = ($cansend || !empty($config['allowstudents']));
 
-// managers can delete by capability 'candelete';
-// those with 'cansend' (incl students, if $config['allowstudents']) can only delete drafts;
-$candelete = (has_capability('block/quickmail:candelete', $context) or ($cansend and $type == 'drafts') or ($properpermission and $type == 'drafts'));
+// Managers can delete by capability 'candelete'.
+// Those with 'cansend' (incl students, if $config['allowstudents']) can only delete drafts.
+$candelete = (
+    has_capability('block/quickmail:candelete', $context) ||
+    ($cansend && $type == 'drafts') || ($properpermission && $type == 'drafts')
+);
 
-// Stops students from tempering with history
-if (!$properpermission or (!$candelete and in_array($action, $validactions))) {
-    print_error('no_permission', 'block_quickmail');
+// Stops students from tempering with history.
+if (!$properpermission || (!$candelete && in_array($action, $validactions))) {
+    throw new moodle_exception('no_permission', 'block_quickmail');
 }
 
-if (isset($action) and !in_array($action, $validactions)) {
-    print_error('not_valid_action', 'block_quickmail', '', $action);
+if (isset($action) && !in_array($action, $validactions)) {
+    throw new moodle_exception('not_valid_action', 'block_quickmail', '', $action);
 }
 
-if (isset($action) and empty($typeid)) {
-    print_error('not_valid_typeid', 'block_quickmail', '', $action);
+if (isset($action) && empty($typeid)) {
+    throw new moodle_exception('not_valid_typeid', 'block_quickmail', '', $action);
 }
 
 $blockname = quickmail::_s('pluginname');
@@ -102,8 +107,9 @@ switch ($action) {
             ]);
             redirect($url);
         } else {
-            print_error('delete_failed', 'block_quickmail', '', $typeid);
+            throw new moodle_exception('delete_failed', 'block_quickmail', '', $typeid);
         }
+        break;
     case "delete":
         $html = quickmail::delete_dialog($courseid, $type, $typeid);
         break;
@@ -126,9 +132,9 @@ if ($courseid == SITEID) {
     );
 }
 
-if ($canimpersonate and $USER->id != $userid) {
+if ($canimpersonate && $USER->id != $userid) {
     $user = $DB->get_record('user', ['id' => $userid]);
-    // http://docs.moodle.org/dev/Additional_name_fields
+    // See http://docs.moodle.org/dev/Additional_name_fields .
     $header .= ' for ' . fullname($user);
 }
 
