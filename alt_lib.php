@@ -15,27 +15,74 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Class library for alternate email functionality.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
+// phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
+/**
+ * Alternate action interface.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 interface quickmail_alternate_actions {
+    /** @var string View action. */
     const VIEW = 'view';
+
+    /** @var string Delete Action */
     const DELETE = 'delete';
+
+    /** @var string Interact action. */
     const INTERACT = 'interact';
+
+    /** @var string Confirmed action. */
     const CONFIRMED = 'confirmed';
+
+    /** @var string Information action. */
     const INFORMATION = 'inform';
+
+    /** @var string Verify action. */
     const VERIFY = 'verify';
 }
 
+/**
+ * Alternate action base class.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 abstract class quickmail_alternate implements quickmail_alternate_actions {
+    /**
+     * Creates and returns a base URL to the alternate email page for a given course.
+     *
+     * @param int $courseid The course ID.
+     * @param array $additional Additional URL query parameters.
+     * @return moodle_url The generated URL.
+     * @throws moodle_exception
+     */
     private static function base_url($courseid, $additional = []) {
         $params = ['courseid' => $courseid] + $additional;
         return new moodle_url('/blocks/quickmail/alternate.php', $params);
     }
 
+    /**
+     * Retrieves a list of alternate email records for a given course.
+     *
+     * @param stdClass $course A course object.
+     * @return array A list of alternate email records.
+     * @throws dml_exception
+     */
     public static function get($course) {
         global $DB;
 
@@ -43,6 +90,12 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         return $DB->get_records('block_quickmail_alternate', $params, 'valid DESC');
     }
 
+    /**
+     * Retrieves a alternate email record by its ID.
+     * @param int $id The ID.
+     * @return stdClass The alternate email record.
+     * @throws dml_exception If none or multiples are found.
+     */
     public static function get_one($id) {
         global $DB;
 
@@ -50,6 +103,14 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         return $DB->get_record('block_quickmail_alternate', $params, '*', MUST_EXIST);
     }
 
+    /**
+     * Returns the markup for an alternate email deletion confirmation dialog.
+     * @param stdClass $course The course.
+     * @param int $id The alternate email ID.
+     * @return string The deletion confirmation dialog markup.
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public static function delete($course, $id) {
         global $OUTPUT, $DB;
 
@@ -64,6 +125,15 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         return $OUTPUT->confirm(quickmail::_s('sure', $email), $confirmurl, $cancelurl);
     }
 
+    /**
+     * Deletes a given alternate email, then redirects the user to the alternate email page for a given course.
+     *
+     * @param stdClass $course The course.
+     * @param int $id The alternate email ID.
+     * @return null
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public static function confirmed($course, $id) {
         global $DB;
 
@@ -72,6 +142,16 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         return redirect(self::base_url($course->id, ['flash' => 1]));
     }
 
+    /**
+     * Verifies the given alternate email and prints a notification dialog to the user on completion.
+     *
+     * @param stdClass $course The course.
+     * @param int $id The alternate email ID.
+     * @return string The notification dialog markup.
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public static function verify($course, $id) {
         global $DB, $OUTPUT;
 
@@ -89,13 +169,13 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
 
         $backurl = self::base_url($course->id);
 
-        // Pass through already valid entries
+        // Pass through already valid entries.
         if ($entry->valid) {
             redirect($backurl);
         }
 
-        // Verify key
-        if (empty($value) or !$key = $DB->get_record('user_private_key', $params)) {
+        // Verify key.
+        if (empty($value) || !$key = $DB->get_record('user_private_key', $params)) {
             $reactivate = self::base_url($course->id, [
                 'id' => $id, 'action' => self::INFORMATION,
             ]);
@@ -105,7 +185,7 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
             return $html;
         }
 
-        // One at a time...They can resend the link if they want
+        // One at a time...They can resend the link if they want.
         delete_user_key('blocks/quickmail', $userid);
 
         $entry->valid = 1;
@@ -119,13 +199,22 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         return $html;
     }
 
+    /**
+     * Sends a verification email to a given alternate email and prints a notification dialog to the user on completion.
+     * @param stdClass $course The course.
+     * @param int $id The alternate email ID.
+     * @return string The notification dialog markup.
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public static function inform($course, $id) {
         global $DB, $OUTPUT, $USER;
 
         $entry = self::get_one($id);
 
-        // No restriction
-        // Valid forever
+        // No restriction.
+        // Valid forever.
         $value = get_user_key('blocks/quickmail', $USER->id, $course->id);
 
         $url = self::base_url($course->id);
@@ -146,7 +235,7 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         $htmlbody = quickmail::_s('alternate_body', $a);
         $body = strip_tags($htmlbody);
 
-        // Send email
+        // Send email.
         $user = clone($USER);
         $user->email = $entry->address;
         $user->firstname = quickmail::_s('pluginname');
@@ -179,6 +268,14 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         return $html;
     }
 
+    /**
+     * Returns edit form for a given alternate email, or saves/cancels edits.
+     * @param stdClass $course The course used as context for the redirect on save/cancel.
+     * @param int $id The alternate email id.
+     * @return string|null The markup for the edit form, or no return value on save/cancel.
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public static function interact($course, $id) {
         $form = new quickmail_alternate_form(null, [
             'course' => $course, 'action' => self::INTERACT,
@@ -189,7 +286,7 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         } else if ($data = $form->get_data()) {
             global $DB;
 
-            // Check if email exists in this course
+            // Check if email exists in this course.
             $older = $DB->get_record('block_quickmail_alternate', [
                 'address' => $data->address, 'courseid' => $data->courseid,
             ]);
@@ -224,7 +321,7 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
             $form->set_data(self::get_one($id));
         }
 
-        // MDL-31677
+        // See: MDL-31677.
         $reflect = new ReflectionClass('quickmail_alternate_form');
         $formfield = $reflect->getProperty('_form');
         $formfield->setAccessible(true);
@@ -232,6 +329,14 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         return $formfield->getValue($form)->toHtml();
     }
 
+    /**
+     * Prints out alternative emails for a given course.
+     * @param stdClass $course The course.
+     * @return string The markup.
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public static function view($course) {
         global $OUTPUT;
 
@@ -290,3 +395,5 @@ abstract class quickmail_alternate implements quickmail_alternate_actions {
         return $html;
     }
 }
+// phpcs:enable PSR1.Classes.ClassDeclaration.MultipleClasses
+
