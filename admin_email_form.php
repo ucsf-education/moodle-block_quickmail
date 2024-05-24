@@ -37,9 +37,12 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class admin_email_form extends moodleform {
     /**
-     * Form definition.
+     * The form definition.
+     *
+     * @return void
+     * @throws coding_exception
      */
-    public function definition(): void {
+    protected function definition(): void {
         $mform =& $this->_form;
 
         $mform->addElement('text', 'subject', get_string('subject', 'block_quickmail'));
