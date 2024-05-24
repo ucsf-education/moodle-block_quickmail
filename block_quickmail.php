@@ -15,20 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * The quickmail block.
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot . '/blocks/quickmail/lib.php');
 
+/**
+ * The quickmail block class.
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class block_quickmail extends block_list {
-    function init() {
+    /**
+     * Set the initial properties for the block.
+     */
+    public function init(): void {
         $this->title = quickmail::_s('pluginname');
     }
 
-    function applicable_formats() {
+    /**
+     * {@inheritdoc}
+     */
+    public function applicable_formats(): array {
         global $USER;
         if (is_siteadmin($USER->id) || has_capability('block/quickmail:myaddinstance', context_system::instance())) {
             return ['site' => true, 'my' => true, 'course-view' => true, 'mod-scorm-view' => true];
@@ -36,18 +52,25 @@ class block_quickmail extends block_list {
             return ['site' => false, 'my' => false, 'course-view' => true, 'mod-scorm-view' => true];
         }
     }
-    function has_config() {
+
+    /**
+     * {@inheritdoc}
+     */
+    public function has_config(): bool {
         return true;
     }
+
     /**
-     * Disable multiple instances of this block
-     * @return bool Returns false
+     * {@inheritdoc}
      */
-    function instance_allow_multiple() {
+    public function instance_allow_multiple(): bool {
         return false;
     }
 
-    function get_content() {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_content(): stdClass {
         global $USER, $CFG, $COURSE, $OUTPUT;
 
         if ($this->content !== null) {
@@ -64,7 +87,7 @@ class block_quickmail extends block_list {
         $config = quickmail::load_config($COURSE->id);
         $permission = has_capability('block/quickmail:cansend', $context);
 
-        $cansend = ($permission or !empty($config['allowstudents']));
+        $cansend = ($permission || !empty($config['allowstudents']));
 
         $iconclass = ['class' => 'icon'];
 
@@ -126,7 +149,12 @@ class block_quickmail extends block_list {
             }
         }
 
-        if ((has_capability('block/quickmail:myaddinstance', context_system::instance()) || is_siteadmin($USER->id)) && $COURSE->id == SITEID) {
+        if (
+            (
+                has_capability('block/quickmail:myaddinstance', context_system::instance()) ||
+                is_siteadmin($USER->id)
+            ) && $COURSE->id == SITEID
+        ) {
             $sendadminemailstr = quickmail::_s('sendadmin');
             $icon = $OUTPUT->pix_icon('t/email', $sendadminemailstr, 'moodle', $iconclass);
             $sendadminemail = html_writer::link(
@@ -144,7 +172,6 @@ class block_quickmail extends block_list {
             );
             $this->content->items[] = $history;
         }
-
 
         return $this->content;
     }
