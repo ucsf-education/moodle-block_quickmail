@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * The email signature page.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
@@ -22,30 +24,29 @@
  */
 
 require_once('../../config.php');
+require_login();
 require_once('lib.php');
 require_once('signature_form.php');
-
-require_login();
 
 $courseid = required_param('courseid', PARAM_INT);
 $sigid = optional_param('id', 0, PARAM_INT);
 $flash = optional_param('flash', 0, PARAM_INT);
 $confirm = optional_param('confirm', 0, PARAM_INT);
 
-if ($courseid and !$course = $DB->get_record('course', ['id' => $courseid])) {
-    print_error('no_course', 'block_quickmail', '', $courseid);
+if ($courseid && !$course = $DB->get_record('course', ['id' => $courseid])) {
+    throw new moodle_exception('no_course', 'block_quickmail', '', $courseid);
 }
 
 $config = quickmail::load_config($courseid);
 
 $context = context_course::instance($courseid);
 $haspermission = (
-    has_capability('block/quickmail:cansend', $context) or
+    has_capability('block/quickmail:cansend', $context) ||
     !empty($config['allowstudents'])
 );
 
 if (!$haspermission) {
-    print_error('no_permission', 'block_quickmail');
+    throw new moodle_exception('no_permission', 'block_quickmail');
 }
 
 $blockname = quickmail::_s('pluginname');
@@ -70,9 +71,9 @@ $PAGE->set_pagelayout('standard');
 $params = ['userid' => $USER->id];
 $dbsigs = $DB->get_records('block_quickmail_signatures', $params);
 
-$sig = (!empty($sigid) and isset($sigs[$sigid])) ? $sigs[$sigid] : new stdClass();
+$sig = (!empty($sigid) && isset($sigs[$sigid])) ? $sigs[$sigid] : new stdClass();
 
-if (empty($sigid) or !isset($dbsigs[$sigid])) {
+if (empty($sigid) || !isset($dbsigs[$sigid])) {
     $sig = new stdClass();
     $sig->id = null;
     $sig->title = '';
@@ -122,7 +123,7 @@ if ($form->is_cancelled()) {
         $warnings[] = quickmail::_s('required');
     }
 
-    if (empty($warnings) and empty($delete)) {
+    if (empty($warnings) && empty($delete)) {
         $data->signature = $data->signature_editor['text'];
 
         if (empty($data->default_flag)) {
@@ -132,7 +133,7 @@ if ($form->is_cancelled()) {
         $params = ['userid' => $USER->id, 'default_flag' => 1];
         $default = $DB->get_record('block_quickmail_signatures', $params);
 
-        if ($default and !empty($data->default_flag)) {
+        if ($default && !empty($data->default_flag)) {
             $default->default_flag = 0;
             $DB->update_record('block_quickmail_signatures', $default);
         }
@@ -146,7 +147,7 @@ if ($form->is_cancelled()) {
             $data->id = $DB->insert_record('block_quickmail_signatures', $data);
         }
 
-        // Persist relative links
+        // Persist relative links.
         $data = file_postupdate_standard_editor(
             $data,
             'signature',
