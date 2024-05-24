@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,15 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Swedish language pack by Linnaeus University
+ * Swedish language pack by Linnaeus University.
  *
  * @package    block_quickmail
  * @subpackage quickmail
+ * @copyright  Linnaeus University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
 $string['add_all'] = 'Lägg till alla';
 $string['add_button'] = 'Lägg till';
 $string['all_sections'] = 'Alla sektioner';

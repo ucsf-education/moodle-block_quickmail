@@ -1,4 +1,27 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * US-English language pack.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 $string['allusers'] = ' All Users';
 $string['pluginname'] = 'Quickmail';
 $string['sendadmin'] = 'Admin Email';
@@ -62,7 +85,7 @@ $string['moodle_attachments'] = 'Moodle Attachments ({$a})';
 $string['download_all'] = 'Download All';
 $string['qm_contents'] = 'Download File Contents';
 
-// Config form strings
+// Config form strings.
 $string['allowstudents'] = 'Allow students to use Quickmail';
 $string['allowstudentsdesc'] = 'Allow students to use Quickmail. If you choose "Never", the block cannot be configured to allow students access at the course level.';
 
@@ -102,7 +125,7 @@ $string['addionalemail_desc'] = 'If this option is enabled quickmail emails are 
 $string['are_you_sure'] = 'Are you sure you want to delete {$a->title}? This action
 cannot be reversed.';
 
-// Alternate Email strings
+// Alternate Email strings.
 $string['alternate_new'] = 'Add Alternate Address';
 $string['sure'] = 'Are you sure you want to delete {$a->address}? This action cannot be undone.';
 $string['valid'] = 'Activation Status';
@@ -139,7 +162,7 @@ Thank you.
 ';
 
 
-// Strings for Error Reporting
+// Strings for Error Reporting.
 $string['sent_success'] = 'all messages sent successfully';
 $string['logsuccess'] = 'all messages sent successfully';
 $string['message_failure'] = 'some users did not get message';
@@ -151,7 +174,7 @@ $string['user'] = 'user';
 
 $string['draftssuccess'] = "Draft";
 
-// admin
+// Admin.
 $string['sendadmin'] = 'Send Admin Email';
 $string['noreply'] = 'No-Reply';
 $string['body'] = 'Body';
@@ -169,6 +192,6 @@ $string['something_broke'] = 'It looks like you either have email sending disabl
 $string['time_elapsed'] = 'Time Elapsed: ';
 $string['additional_emails'] = 'Additional Emails';
 $string['additional_emails_help'] = 'Other email addresses you would like the message sent to, in a comma or semicolon separated list. Example:
- 
+
  email1@example.com, email2@example.com
  ';
