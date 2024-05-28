@@ -15,16 +15,37 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Defines all the backup steps for quickmail.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once $CFG->dirroot . '/blocks/quickmail/backup/moodle2/backup_quickmail_stepslib.php';
+defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot . '/blocks/quickmail/backup/moodle2/backup_quickmail_stepslib.php');
+
+/**
+ * Quickmail backup steps class.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class backup_quickmail_block_task extends backup_block_task {
-    protected function define_my_settings() {
+    /**
+     * Define the settings that the quickmail block can have.
+     *
+     * @return void
+     * @throws base_plan_exception
+     * @throws base_setting_exception
+     * @throws base_setting_ui_exception
+     * @throws coding_exception
+     */
+    protected function define_my_settings(): void {
         $includehistory = new backup_generic_setting('include_quickmail_log', base_setting::IS_BOOLEAN, false);
         $includehistory->get_ui()->set_label(get_string('backup_history', 'block_quickmail'));
         $this->add_setting($includehistory);
@@ -39,21 +60,40 @@ class backup_quickmail_block_task extends backup_block_task {
         $this->plan->get_setting('blocks')->add_dependency($includeconfigsettings);
     }
 
+    /**
+     * Defines backup steps for the quickmail block.
+     *
+     * @return void
+     * @throws base_task_exception
+     */
     protected function define_my_steps() {
-        // TODO: additional steps for drafts and alternate emails
+        // Todo: additional steps for drafts and alternate emails.
         $this->add_step(new backup_quickmail_block_structure_step('quickmail_structure', 'emaillogs_and_block_configuration.xml'));
     }
 
-    public function get_fileareas() {
+    /**
+     * Defines the file areas that the quickmail block controls.
+     *
+     * @return array The file areas.
+     */
+    public function get_fileareas(): array {
         return [];
     }
 
-    public function get_configdata_encoded_attributes() {
+    /**
+     * Define the configdata attributes that need to be processed by the contenttransformer.
+     * @return array The configdata attributes.
+     *
+     */
+    public function get_configdata_encoded_attributes(): array {
         return [];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function encode_content_links($content) {
-        // TODO: perhaps needing this when moving away from email zip attaches
+        // Todo: perhaps needing this when moving away from email zip attaches.
         return $content;
     }
 }
