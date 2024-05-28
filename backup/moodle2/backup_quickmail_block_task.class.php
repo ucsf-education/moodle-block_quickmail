@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines all the backup steps for quickmail.
+ * Defines the backup task for quickmail.
  *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot . '/blocks/quickmail/backup/moodle2/backup_quickmail_stepslib.php');
 
 /**
- * Quickmail backup steps class.
+ * Quickmail backup task class.
  *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
