@@ -39,8 +39,6 @@
 function xmldb_block_quickmail_upgrade($oldversion): bool {
     global $DB;
 
-    $result = true;
-
     $dbman = $DB->get_manager();
 
     // 1.9 to 2.0 upgrade.
@@ -119,7 +117,7 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         }
 
         // Quickmail savepoint reached.
-        upgrade_block_savepoint($result, 2011021812, 'quickmail');
+        upgrade_block_savepoint(true, 2011021812, 'quickmail');
     }
 
     if ($oldversion < 2012021014) {
@@ -207,7 +205,7 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         }
 
         // Quickmail savepoint reached.
-        upgrade_block_savepoint($result, 2012021014, 'quickmail');
+        upgrade_block_savepoint(true, 2012021014, 'quickmail');
     }
 
     if ($oldversion < 2012061112) {
@@ -224,14 +222,13 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
                 $attachment->filearea = 'attachment_' . $type;
                 $attachment->component = 'block_quickmail';
 
-                $result = $result && $DB->update_record('files', $attachment);
+                $DB->update_record('files', $attachment);
             }
         }
 
-        upgrade_block_savepoint($result, 2012061112, 'quickmail');
-    }
-    if ($oldversion < 2012061112) {
         migrate_quickmail_20();
+
+        upgrade_block_savepoint(true, 2012061112, 'quickmail');
     }
 
     if ($oldversion < 2014042914) {
@@ -268,5 +265,6 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         // Quickmail savepoint reached.
         upgrade_block_savepoint(true, 2014042914, 'quickmail');
     }
-    return $result;
+
+    return true;
 }
