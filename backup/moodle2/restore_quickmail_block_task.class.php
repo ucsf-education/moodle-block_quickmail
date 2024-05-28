@@ -15,23 +15,39 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Defines the restore task for quickmail.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once $CFG->dirroot . '/blocks/quickmail/backup/moodle2/restore_quickmail_stepslib.php';
+defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot . '/blocks/quickmail/backup/moodle2/restore_quickmail_stepslib.php');
+
+/**
+ * Quickmail restore task class.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class restore_quickmail_block_task extends restore_block_task {
-    public function history_exists() {
-        // Weird... folder doesn't exists
+    /**
+     * Checks if a backup file expected for config restoration exists in the expected location.
+     * @return bool TRUE if the backup file exists, FALSE otherwise.
+     */
+    public function history_exists(): bool {
+        // Weird... folder doesn't exists.
         $fullpath = $this->get_taskbasepath();
         if (empty($fullpath)) {
             return false;
         }
 
-        // Issue #45: trying to restore from a non-existent logfile
+        // Issue #45: trying to restore from a non-existent logfile.
         $fullpath = rtrim($fullpath, '/') . '/emaillogs_and_block_configuration.xml';
         if (!file_exists($fullpath)) {
             return false;
@@ -40,8 +56,17 @@ class restore_quickmail_block_task extends restore_block_task {
         return true;
     }
 
-    protected function define_my_settings() {
-        // Nothing to do
+    /**
+     * Define the settings that the quickmail block can have.
+     *
+     * @return void
+     * @throws backup_setting_exception
+     * @throws base_setting_exception
+     * @throws base_task_exception
+     * @throws coding_exception
+     */
+    protected function define_my_settings(): void {
+        // Nothing to do.
         if (!$this->history_exists()) {
             return;
         }
@@ -54,7 +79,7 @@ class restore_quickmail_block_task extends restore_block_task {
         $isblocks = isset($rootsettings['blocks']) && $rootsettings['blocks'];
         $isusers = isset($rootsettings['users']) && $rootsettings['users'];
 
-        if ($isblocks and $isusers) {
+        if ($isblocks && $isusers) {
             $defaultvalue = true;
             $changeable = true;
         }
@@ -87,7 +112,7 @@ class restore_quickmail_block_task extends restore_block_task {
             [1 => get_string('yes'), 0 => get_string('no')]
         ));
 
-        if ($this->get_target() != backup::TARGET_CURRENT_DELETING and $this->get_target() != backup::TARGET_EXISTING_DELETING) {
+        if ($this->get_target() != backup::TARGET_CURRENT_DELETING && $this->get_target() != backup::TARGET_EXISTING_DELETING) {
             $overwritehistory->set_value(false);
             $overwritehistory->set_status(backup_setting::LOCKED_BY_CONFIG);
         }
@@ -96,6 +121,12 @@ class restore_quickmail_block_task extends restore_block_task {
         $restorehistory->add_dependency($overwritehistory);
     }
 
+    /**
+     * Defines restore steps for the quickmail block.
+     *
+     * @return void
+     * @throws base_task_exception
+     */
     protected function define_my_steps() {
         if ($this->history_exists()) {
             $this->add_step(new restore_quickmail_log_structure_step(
@@ -105,19 +136,35 @@ class restore_quickmail_block_task extends restore_block_task {
         }
     }
 
-    public function get_fileareas() {
+    /**
+     * Defines the file areas that the quickmail block controls.
+     *
+     * @return array The file areas.
+     */
+    public function get_fileareas(): array {
         return [];
     }
 
-    public function get_configdata_encoded_attributes() {
+    /**
+     * Define the configdata attributes that need to be processed by the contenttransformer.
+     *
+     * @return array The configdata attributes.
+     */
+    public function get_configdata_encoded_attributes(): array {
         return [];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function define_decode_contents() {
-        // TODO: perhaps needing this when moving away from email zip attaches
+        // Todo: perhaps needing this when moving away from email zip attaches.
         return [];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function define_decode_rules() {
         return [];
     }
