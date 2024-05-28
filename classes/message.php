@@ -68,7 +68,7 @@ class Message {
     /**
      * Constructs a message object for mailing to groups filtered by admin_email.
      *
-     * @param array $data An array of variables related to the emailing.
+     * @param stdClass $data Message data.
      * @param array $users An array of users to be emailed.
      * @throws dml_exception
      */
