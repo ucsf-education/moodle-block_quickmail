@@ -54,7 +54,7 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
 
         // Rename field timesent on table block_quickmail_log to time.
         $table = new xmldb_table('block_quickmail_log');
-        $field = new xmldb_field('timesent', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'format');
+        $field = new xmldb_field('timesent', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, null, '0', 'format');
 
         // Conditionally launch rename field timesent.
         if ($dbman->field_exists($table, $field)) {
@@ -65,11 +65,11 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         $table = new xmldb_table('block_quickmail_signatures');
 
         // Adding fields to table block_quickmail_signatures.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '11', true, XMLDB_NOTNULL, null, '0');
         $table->add_field('title', XMLDB_TYPE_CHAR, '125', null, null, null, null);
         $table->add_field('signature', XMLDB_TYPE_TEXT, 'medium', null, null, null, null);
-        $table->add_field('default_flag', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
+        $table->add_field('default_flag', XMLDB_TYPE_INTEGER, '1', true, XMLDB_NOTNULL, null, '1');
 
         // Adding keys to table block_quickmail_signatures.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
@@ -83,15 +83,15 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         $table = new xmldb_table('block_quickmail_drafts');
 
         // Adding fields to table block_quickmail_drafts.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', true, XMLDB_NOTNULL, null, '0');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '11', true, XMLDB_NOTNULL, null, '0');
         $table->add_field('mailto', XMLDB_TYPE_TEXT, 'medium', null, null, null, null);
         $table->add_field('subject', XMLDB_TYPE_TEXT, 'small', null, null, null, null);
         $table->add_field('message', XMLDB_TYPE_TEXT, 'medium', null, null, null, null);
         $table->add_field('attachment', XMLDB_TYPE_TEXT, 'small', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('format', XMLDB_TYPE_INTEGER, '3', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
-        $table->add_field('time', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null);
+        $table->add_field('format', XMLDB_TYPE_INTEGER, '3', true, XMLDB_NOTNULL, null, '1');
+        $table->add_field('time', XMLDB_TYPE_INTEGER, '10', true, null, null, null);
 
         // Adding keys to table block_quickmail_drafts.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
@@ -105,8 +105,8 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         $table = new xmldb_table('block_quickmail_config');
 
         // Adding fields to table block_quickmail_config.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('coursesid', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('coursesid', XMLDB_TYPE_INTEGER, '11', true, XMLDB_NOTNULL, null, null);
         $table->add_field('name', XMLDB_TYPE_CHAR, '25', null, XMLDB_NOTNULL, null, null);
         $table->add_field('value', XMLDB_TYPE_CHAR, '125', null, null, null, null);
 
@@ -129,7 +129,7 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         $field->set_attributes(
             XMLDB_TYPE_INTEGER,
             '10',
-            XMLDB_UNSIGNED,
+            true,
             XMLDB_NOTNULL,
             true,
             null,
@@ -142,7 +142,7 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         $field->set_attributes(
             XMLDB_TYPE_INTEGER,
             '10',
-            XMLDB_UNSIGNED,
+            true,
             XMLDB_NOTNULL,
             false,
             null,
@@ -168,7 +168,7 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         $field->set_attributes(
             XMLDB_TYPE_INTEGER,
             '1',
-            XMLDB_UNSIGNED,
+            true,
             XMLDB_NOTNULL,
             false,
             '0',
@@ -193,7 +193,7 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
                 'alternateid',
                 XMLDB_TYPE_INTEGER,
                 '10',
-                XMLDB_UNSIGNED,
+                true,
                 null,
                 null,
                 null,
