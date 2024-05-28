@@ -15,14 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Defines all the restore steps for quickmail.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\context;
+
+/**
+ * Quickmail restore steps class.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class restore_quickmail_log_structure_step extends restore_structure_step {
-    protected function define_structure() {
+    /**
+     * Defines and returns the structure of this restore step.
+     *
+     * @return array The structure.
+     */
+    protected function define_structure(): array {
         $paths = [];
 
         $paths[] = new restore_path_element('block', '/block', true);
@@ -32,7 +49,16 @@ class restore_quickmail_log_structure_step extends restore_structure_step {
         return $paths;
     }
 
-    protected function process_block($data) {
+    /**
+     * Restores quickmail block data.
+     *
+     * @param array $data The data.
+     * @return void
+     * @throws base_step_exception
+     * @throws dml_exception
+     * @throws restore_step_exception|restore_dbops_exception
+     */
+    public function process_block($data): void {
         global $DB;
 
         $data = (object) $data;
@@ -40,13 +66,13 @@ class restore_quickmail_log_structure_step extends restore_structure_step {
         $restore = $this->get_setting_value('restore_quickmail_history');
         $overwrite = $this->get_setting_value('overwrite_quickmail_history');
 
-        // Delete current history, if any
+        // Delete current history, if any.
         if ($overwrite) {
             $params = ['courseid' => $this->get_courseid()];
             $DB->delete_records('block_quickmail_log', $params);
         }
 
-        if ($restore and isset($data->emaillogs['log'])) {
+        if ($restore && isset($data->emaillogs['log'])) {
             global $DB;
 
             $currentcontext = context_course::instance($this->get_courseid());
@@ -71,11 +97,17 @@ class restore_quickmail_log_structure_step extends restore_structure_step {
         }
     }
 
-
-    protected function process_block_level_setting($blocklevelsetting, $courseid) {
+    /**
+     * Processes block level settings while restoring data.
+     *
+     * @param array $blocklevelsetting
+     * @param int $courseid
+     * @return void
+     * @throws dml_exception
+     */
+    protected function process_block_level_setting($blocklevelsetting, $courseid): void {
         global $DB;
         if ($blocklevelsetting['name']) {
-                // quickmail::default_config($courseid);
                 $config = new stdClass();
                 $config->coursesid = $courseid;
                 $config->name = $blocklevelsetting['name'];
@@ -84,7 +116,19 @@ class restore_quickmail_log_structure_step extends restore_structure_step {
         }
     }
 
-    protected function process_log($log, $oldctx, $context) {
+    /**
+     * Processes log data while restoring.
+     *
+     * @param array $log The log data.
+     * @param int $oldctx The old context ID.
+     * @param context $context The course context.
+     * @return void
+     * @throws base_step_exception
+     * @throws dml_exception
+     * @throws restore_dbops_exception
+     * @throws restore_step_exception
+     */
+    protected function process_log($log, $oldctx, $context): void {
         global $DB;
 
         $log = (object) $log;
@@ -102,7 +146,7 @@ class restore_quickmail_log_structure_step extends restore_structure_step {
         $log->mailto = implode(',', $validusers);
         $log->time = $this->apply_date_offset($log->time);
 
-        // TODO: correctly convert alternate ids
+        // Todo: correctly convert alternate ids.
         $log->alternateid = null;
 
         $newid = $DB->insert_record('block_quickmail_log', $log);
@@ -119,8 +163,7 @@ class restore_quickmail_log_structure_step extends restore_structure_step {
                 $log->userid
             );
 
-            $sql = 'UPDATE {files} SET
-                itemid = :newid WHERE contextid = :ctxt AND itemid = :oldid';
+            $sql = 'UPDATE {files} SET itemid = :newid WHERE contextid = :ctxt AND itemid = :oldid';
 
             $params = [
                 'newid' => $newid, 'oldid' => $oldid, 'ctxt' => $context->id,
