@@ -58,4 +58,3 @@ Feature: Control student usage of Quickmail
     When I log in as "student1"
     And I follow "Course 1"
     Then I should not see "Quickmail"
-
