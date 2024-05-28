@@ -90,7 +90,9 @@ class backup_quickmail_block_task extends backup_block_task {
     }
 
     /**
-     * {@inheritdoc}
+     * Encodes links for backup in the given content, then returns the transformed content.
+     * @param string $content The contents to back up.
+     * @return string
      */
     public static function encode_content_links($content) {
         // Todo: perhaps needing this when moving away from email zip attaches.
