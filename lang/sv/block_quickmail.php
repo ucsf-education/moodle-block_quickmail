@@ -62,6 +62,7 @@ $string['potential_sections'] = 'Tillgängliga sektioner';
 $string['potential_users'] = 'Tillgängliga användare';
 $string['prepend_class'] = 'Inled med kursnamn';
 $string['quickmail:allowalternate'] = 'Tillåt användare att lägga till avsändaradresser för kursen.';
+$string['quickmail:cansend'] = 'Får skicka epost med Quickmail';
 $string['receipt'] = 'Skicka kopia till Dig själv';
 $string['remove_all'] = 'Ta bort alla';
 $string['remove_button'] = 'Ta bort';
@@ -77,5 +78,3 @@ $string['sure'] = 'Vill du verkligen ta bort {$a->address}? Detta går inte att 
 $string['title'] = 'Titel';
 $string['valid'] = 'Aktiveringsstatus';
 $string['waiting'] = 'Väntar';
-
-$string['quickmail:cansend'] = 'Får skicka epost med Quickmail';
