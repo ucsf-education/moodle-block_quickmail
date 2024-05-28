@@ -1,8 +1,8 @@
-@javascript @block_quickmail_groups_feature
-Feature: Control student use of Quickmail in courses in accordance with FERPA constraints. 
+@javascript @block @block_quickmail @block_quickmail_groups_feature
+Feature: Control student use of Quickmail in courses in accordance with FERPA constraints.
     That is, students in one section (group) should not be able to email members of other groups
 
-    Background: 
+    Background:
         Given the following "courses" exist:
           | fullname | shortname | category | groupmode |
           | Course 1 | C1 | 0 | 1 |
