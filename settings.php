@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Plugin settings page.
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
@@ -24,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
-    require_once $CFG->dirroot . '/blocks/quickmail/lib.php';
+    require_once($CFG->dirroot . '/blocks/quickmail/lib.php');
 
     $select = [-1 => get_string('never'), 0 => get_string('no'), 1 => get_string('yes')];
 
