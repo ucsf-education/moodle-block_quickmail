@@ -15,31 +15,49 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Defines all the backup steps for quickmail.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Quickmail backup steps class.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class backup_quickmail_block_structure_step extends backup_block_structure_step {
-    protected function define_structure() {
+    /**
+     * Defines the structure for this backup step.
+     *
+     * @return backup_nested_element
+     * @throws base_element_struct_exception
+     * @throws base_step_exception
+     * @throws dml_exception
+     */
+    protected function define_structure(): backup_nested_element {
         global $DB;
 
         $params = ['courseid' => $this->get_courseid()];
         $context = context_course::instance($params['courseid']);
-        // LOGS
+        // LOGS.
         $quickmaillogs = $DB->get_records('block_quickmail_log', $params);
         $includehistory = $this->get_setting_value('include_quickmail_log');
 
-        // QM BLOCK CONFIG BACKUP
-        // attempt to create block settings step for quickmail, so people can restore their quickmail settings
+        // QM BLOCK CONFIG BACKUP.
+        // Attempt to create block settings step for quickmail, so people can restore their quickmail settings.
 
         // WHY IS CONFIGS TABLE SET TO COURSES WITH AN S ID????????
         $paramstwo = ['coursesid' => $this->get_courseid()];
         $quickmailblocklevelsettings = $DB->get_records('block_quickmail_config', $paramstwo);
         $includeconfig = $this->get_setting_value('include_quickmail_config');
 
-        // LOGS
+        // LOGS.
         $backuplogsandsettings = new backup_nested_element('emaillogs', ['courseid'], null);
 
         $log = new backup_nested_element('log', ['id'], [
@@ -47,7 +65,7 @@ class backup_quickmail_block_structure_step extends backup_block_structure_step 
             'message', 'attachment', 'format', 'time', 'failuserids', 'additional_emails',
         ]);
 
-        // courseid name value
+        // Courseid name value.
         $quickmailsettings = new backup_nested_element('block_level_setting', ['id'], [
             'courseid', 'name', 'value',
         ]);
@@ -59,7 +77,7 @@ class backup_quickmail_block_structure_step extends backup_block_structure_step 
 
         $backuplogsandsettings->set_source_array([(object)$params]);
 
-        if (!empty($quickmaillogs) and $includehistory) {
+        if (!empty($quickmaillogs) && $includehistory) {
             $log->set_source_sql(
                 'SELECT * FROM {block_quickmail_log}
                 WHERE courseid = ?',
@@ -67,7 +85,7 @@ class backup_quickmail_block_structure_step extends backup_block_structure_step 
             );
         }
 
-        if (!empty($quickmailblocklevelsettings) and $includeconfig) {
+        if (!empty($quickmailblocklevelsettings) && $includeconfig) {
             $quickmailsettings->set_source_sql(
                 'SELECT * FROM {block_quickmail_config}
                 WHERE coursesid = ?',
@@ -76,11 +94,9 @@ class backup_quickmail_block_structure_step extends backup_block_structure_step 
         }
 
         $log->annotate_ids('user', 'userid');
-        // $quickmail_settings->annotate_ids('setting');
 
         $log->annotate_files('block_quickmail', 'log', 'id', $context->id);
         $log->annotate_files('block_quickmail', 'attachment_log', 'id', $context->id);
-        // $quickmail_settings->annotate_files('block_quickmail', 'settings', 'courseid', $context->id);
 
         return $this->prepare_block_structure($backuplogsandsettings);
     }
