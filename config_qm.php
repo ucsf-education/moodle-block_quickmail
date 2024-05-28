@@ -15,15 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Quickmail configuration page.
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once '../../config.php';
-require_once 'lib.php';
-require_once 'config_qm_form.php';
+require_once('../../config.php');
+require_once('lib.php');
+require_once('config_qm_form.php');
 
 require_login();
 
@@ -31,7 +32,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $reset = optional_param('reset', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', ['id' => $courseid])) {
-    print_error('no_course', 'block_quickmail', '', $courseid);
+    throw new moodle_exception('no_course', 'block_quickmail', '', $courseid);
 }
 
 $context = context_course::instance($courseid);
