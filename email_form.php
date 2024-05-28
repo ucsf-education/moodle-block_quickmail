@@ -253,7 +253,6 @@ class email_form extends moodleform {
             )
         );
 
-
         // DWE -> NON REQUIRED VERSION.
         $table->data[] = new html_table_row([$selectedlabel, $rolefilterlabel]);
         $table->data[] = new html_table_row([$selectfilter, $centerbuttons, $filters]);

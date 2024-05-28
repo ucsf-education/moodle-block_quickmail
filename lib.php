@@ -491,7 +491,7 @@ abstract class quickmail {
             $subject = $log->subject;
             $attachments = $log->attachment;
             if (! empty($log->failuserids)) {
-            // DWE -> keep track of user ids that failed.
+                // DWE -> keep track of user ids that failed.
                 $arrayoffaileduserids = explode(",", $log->failuserids);
             }
             $params = [
@@ -554,7 +554,6 @@ abstract class quickmail {
                 $sendagain = "";
                 $failcount = "";
             }
-
 
             if ($courseid == 1) {
                 $table->data[] = [$date, $subject, $actionlinks, $statussentornot, $failcount, $sendagain];
@@ -682,7 +681,6 @@ abstract class quickmail {
         foreach ($failuserids as $id => $failedaddressorid) {
             if (! is_numeric($failedaddressorid)) {
                 $additionalemails[] = $failedaddressorid;
-
 
                 unset($failuserids[$id]);
             }

@@ -70,7 +70,6 @@ class backup_quickmail_block_structure_step extends backup_block_structure_step 
             'courseid', 'name', 'value',
         ]);
 
-
         $backuplogsandsettings->add_child($log);
 
         $backuplogsandsettings->add_child($quickmailsettings);
