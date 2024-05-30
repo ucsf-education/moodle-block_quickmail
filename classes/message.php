@@ -95,7 +95,7 @@ class Message {
      */
     public function send($users = null): array {
 
-        $this->startTime = time();
+        $this->starttime = time();
         $users = empty($users) ? $this->users : $users;
 
         $noreplyuser                = new stdClass();
@@ -132,7 +132,7 @@ class Message {
             }
         }
 
-        $this->endTime = time();
+        $this->endtime = time();
 
         return $this->failuserids;
     }
@@ -154,7 +154,7 @@ class Message {
             . " " . quickmail::_s('users')
             . " <br /> ";
         $timeline = quickmail::_s('time_elapsed')
-            . " " . ($this->endTime - $this->startTime)
+            . " " . ($this->endtime - $this->starttime)
             . " "
             . quickmail::_s('seconds') . " <br />";
         $warnline = quickmail::_s('warnings') . " " . count($this->warnings) . " <br />";
