@@ -15,26 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Page for alternate email form.
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once '../../config.php';
-require_once 'lib.php';
-require_once 'alt_lib.php';
-require_once 'alt_form.php';
+require_once('../../config.php');
+require_once('lib.php');
+require_once('alt_lib.php');
+require_once('alt_form.php');
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', 'view', PARAM_TEXT);
 $id = optional_param('id', null, PARAM_INT);
 $flash = optional_param('flash', 0, PARAM_INT);
 
-$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 
 $context = context_course::instance($courseid);
-// Permission
+// Permission.
 require_login($course);
 require_capability('block/quickmail:allowalternate', $context);
 
@@ -42,7 +43,7 @@ $blockname = quickmail::_s('pluginname');
 $heading = quickmail::_s('alternate');
 $title = "$blockname: $heading";
 
-$url = new moodle_url('/blocks/quickmail/alternate.php', array('courseid' => $courseid));
+$url = new moodle_url('/blocks/quickmail/alternate.php', ['courseid' => $courseid]);
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
@@ -57,7 +58,7 @@ $PAGE->set_pagetype(quickmail::PAGE_TYPE);
 $PAGE->set_pagelayout('standard');
 
 if (!method_exists('quickmail_alternate', $action)) {
-    // Always fallback on view
+    // Always fallback on view.
     $action = 'view';
 }
 

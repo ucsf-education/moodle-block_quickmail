@@ -15,16 +15,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Alternate email form file.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once $CFG->libdir . '/formslib.php';
+defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir . '/formslib.php');
+
+/**
+ * The alternate email form.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class quickmail_alternate_form extends moodleform {
-    function definition() {
+    /**
+     * The form definition.
+     *
+     * @return void
+     * @throws coding_exception
+     */
+    protected function definition(): void {
         $m =& $this->_form;
 
         $course = $this->_customdata['course'];
@@ -35,23 +53,23 @@ class quickmail_alternate_form extends moodleform {
         $m->addRule('address', get_string('missingemail'), 'required', null, 'server');
 
         $m->addElement('hidden', 'valid', 0);
-        $m->setType('valid',PARAM_INT);
-        
+        $m->setType('valid', PARAM_INT);
+
         $m->addElement('hidden', 'courseid', $course->id);
-        $m->setType('courseid',PARAM_INT);
-        
+        $m->setType('courseid', PARAM_INT);
+
         $m->addElement('hidden', 'id', '');
-        $m->setType('id',PARAM_INT);
-        
+        $m->setType('id', PARAM_INT);
+
         $m->addElement('hidden', 'action', $this->_customdata['action']);
-        $m->setType('action',PARAM_ALPHA);
+        $m->setType('action', PARAM_ALPHA);
 
-        $buttons = array(
+        $buttons = [
             $m->createElement('submit', 'submit', get_string('savechanges')),
-            $m->createElement('cancel')
-        );
+            $m->createElement('cancel'),
+        ];
 
-        $m->addGroup($buttons, 'buttons', '', array(' '), false);
+        $m->addGroup($buttons, 'buttons', '', [' '], false);
 
         $m->closeHeaderBefore('buttons');
     }

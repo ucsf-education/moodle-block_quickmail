@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,15 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Swedish language pack by Linnaeus University
+ * Swedish language pack by Linnaeus University.
  *
- * @package    block
+ * @package    block_quickmail
  * @subpackage quickmail
+ * @copyright  Linnaeus University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
 $string['add_all'] = 'Lägg till alla';
 $string['add_button'] = 'Lägg till';
 $string['all_sections'] = 'Alla sektioner';
@@ -64,7 +61,39 @@ $string['no_subject'] = 'Du måste skriva ett ämne.';
 $string['potential_sections'] = 'Tillgängliga sektioner';
 $string['potential_users'] = 'Tillgängliga användare';
 $string['prepend_class'] = 'Inled med kursnamn';
+$string['privacy:metadata:block_quickmail_drafts'] = 'Lagrar utkast till osända quickmail-meddelanden.';
+$string['privacy:metadata:block_quickmail_drafts:additional_email'] = 'E-postmeddelanden från ytterligare mottagare.';
+$string['privacy:metadata:block_quickmail_drafts:alternateid'] = 'ID för den alternativa e-postadressen för detta meddelande.';
+$string['privacy:metadata:block_quickmail_drafts:attachment'] = 'Namnen på filerna som bifogas detta meddelande.';
+$string['privacy:metadata:block_quickmail_drafts:courseid'] = 'ID för kursen som detta utkast tillhör.';
+$string['privacy:metadata:block_quickmail_drafts:format'] = 'ID för textformatet som ska användas för detta utkast.';
+$string['privacy:metadata:block_quickmail_drafts:id'] = 'ID-utkastet.';
+$string['privacy:metadata:block_quickmail_drafts:mailto'] = 'En lista över användar-ID:n för mottagarna.';
+$string['privacy:metadata:block_quickmail_drafts:message'] = 'Innehållet i detta utkast.';
+$string['privacy:metadata:block_quickmail_drafts:subject'] = 'Ämnet för detta utkast.';
+$string['privacy:metadata:block_quickmail_drafts:time'] = 'Tidpunkten då detta utkast senast uppdaterades.';
+$string['privacy:metadata:block_quickmail_drafts:userid'] = 'ID för användaren som skapade detta utkast.';
+$string['privacy:metadata:block_quickmail_log'] = 'Butiker skickade snabbmeddelanden.';
+$string['privacy:metadata:block_quickmail_log:additional_emails'] = 'E-postmeddelanden från ytterligare mottagare.';
+$string['privacy:metadata:block_quickmail_log:alterateid'] = 'ID för den alternativa e-postadressen för detta meddelande.';
+$string['privacy:metadata:block_quickmail_log:attachment'] = 'Namnen på filerna som bifogas detta meddelande.';
+$string['privacy:metadata:block_quickmail_log:courseid'] = 'ID för kursen detta meddelande tillhör.';
+$string['privacy:metadata:block_quickmail_log:failuserids'] = 'En lista med användar-ID:n för de misslyckade mottagarna.';
+$string['privacy:metadata:block_quickmail_log:format'] = 'ID för textformatet som ska användas för detta meddelande.';
+$string['privacy:metadata:block_quickmail_log:id'] = 'Meddelande-ID.';
+$string['privacy:metadata:block_quickmail_log:mailto'] = 'En lista över användar-ID:n för mottagarna.';
+$string['privacy:metadata:block_quickmail_log:message'] = 'Innehållet i meddelandet.';
+$string['privacy:metadata:block_quickmail_log:subject'] = 'Ämnet för meddelandet.';
+$string['privacy:metadata:block_quickmail_log:time'] = 'Tidsstämpeln för när detta meddelande skickades.';
+$string['privacy:metadata:block_quickmail_log:userid'] = 'ID för användaren som skickade detta meddelande.';
+$string['privacy:metadata:block_quickmail_signatures'] = 'Lagrar anpassade användarmeddelandesignaturer.';
+$string['privacy:metadata:block_quickmail_signatures:default_flag'] = 'Flaggar standardsignaturen.';
+$string['privacy:metadata:block_quickmail_signatures:id'] = 'Signatur-ID.';
+$string['privacy:metadata:block_quickmail_signatures:signature'] = 'Innehållet i signaturen.';
+$string['privacy:metadata:block_quickmail_signatures:title'] = 'Signaturtiteln.';
+$string['privacy:metadata:block_quickmail_signatures:userid'] = 'ID för användaren som äger denna signatur.';
 $string['quickmail:allowalternate'] = 'Tillåt användare att lägga till avsändaradresser för kursen.';
+$string['quickmail:cansend'] = 'Får skicka epost med Quickmail';
 $string['receipt'] = 'Skicka kopia till Dig själv';
 $string['remove_all'] = 'Ta bort alla';
 $string['remove_button'] = 'Ta bort';
@@ -80,5 +109,3 @@ $string['sure'] = 'Vill du verkligen ta bort {$a->address}? Detta går inte att 
 $string['title'] = 'Titel';
 $string['valid'] = 'Aktiveringsstatus';
 $string['waiting'] = 'Väntar';
-
-$string['quickmail:cansend'] = 'Får skicka epost med Quickmail';

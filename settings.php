@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Plugin settings page.
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
@@ -23,82 +24,102 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if($ADMIN->fulltree) {
-    require_once $CFG->dirroot . '/blocks/quickmail/lib.php';
+if ($ADMIN->fulltree) {
+    require_once($CFG->dirroot . '/blocks/quickmail/lib.php');
 
-    $select = array(-1 => get_string('never'), 0 => get_string('no'), 1 => get_string('yes'));
+    $select = [-1 => get_string('never'), 0 => get_string('no'), 1 => get_string('yes')];
 
     $allow = quickmail::_s('allowstudents');
     $allowdesc = quickmail::_s('allowstudentsdesc');
     $settings->add(
-        new admin_setting_configselect('block_quickmail_allowstudents',
-            $allow, $allowdesc, 0, $select
+        new admin_setting_configselect(
+            'block_quickmail_allowstudents',
+            $allow,
+            $allowdesc,
+            0,
+            $select
         )
     );
 
     $roles = $DB->get_records('role', null, 'sortorder ASC');
 
-    $default_sns = array('editingteacher', 'teacher', 'student');
-    $defaults = array_filter($roles, function ($role) use ($default_sns) {
-        return in_array($role->shortname, $default_sns);
+    $defaultsns = ['editingteacher', 'teacher', 'student'];
+    $defaults = array_filter($roles, function ($role) use ($defaultsns) {
+        return in_array($role->shortname, $defaultsns);
     });
 
-    $only_names = function ($role) { return $role->name ? trim(format_string($role->name)) : $role->shortname; };
+    $onlynames = function ($role) {
+        return $role->name ? trim(format_string($role->name)) : $role->shortname;
+    };
 
-    $select_roles = quickmail::_s('select_roles');
+    $selectroles = quickmail::_s('select_roles');
     $settings->add(
-        new admin_setting_configmultiselect('block_quickmail_roleselection',
-            $select_roles, $select_roles,
+        new admin_setting_configmultiselect(
+            'block_quickmail_roleselection',
+            $selectroles,
+            $selectroles,
             array_keys($defaults),
-            array_map($only_names, $roles)
+            array_map($onlynames, $roles)
         )
     );
 
     $settings->add(
-        new admin_setting_configselect('block_quickmail_receipt',
-        quickmail::_s('receipt'), quickmail::_s('receipt_help'),
-        0, $select
+        new admin_setting_configselect(
+            'block_quickmail_receipt',
+            quickmail::_s('receipt'),
+            quickmail::_s('receipt_help'),
+            0,
+            $select
         )
     );
 
-    $options = array(
+    $options = [
         0 => get_string('none'),
         'idnumber' => get_string('idnumber'),
-        'shortname' => get_string('shortname')
-    );
+        'shortname' => get_string('shortname'),
+    ];
 
     $settings->add(
-        new admin_setting_configselect('block_quickmail_prepend_class',
-            quickmail::_s('prepend_class'), quickmail::_s('prepend_class_desc'),
-            0, $options
+        new admin_setting_configselect(
+            'block_quickmail_prepend_class',
+            quickmail::_s('prepend_class'),
+            quickmail::_s('prepend_class_desc'),
+            0,
+            $options
         )
     );
 
-    $groupoptions = array(
+    $groupoptions = [
         'strictferpa' => get_string('strictferpa', 'block_quickmail'),
         'courseferpa' => get_string('courseferpa', 'block_quickmail'),
-        'noferpa' => get_string('noferpa', 'block_quickmail')
-    );
+        'noferpa' => get_string('noferpa', 'block_quickmail'),
+    ];
 
     $settings->add(
-        new admin_setting_configselect('block_quickmail_ferpa',
-            quickmail::_s('ferpa'), quickmail::_s('ferpa_desc'),
-            'strictferpa', $groupoptions
+        new admin_setting_configselect(
+            'block_quickmail_ferpa',
+            quickmail::_s('ferpa'),
+            quickmail::_s('ferpa_desc'),
+            'strictferpa',
+            $groupoptions
         )
     );
 
     $settings->add(
-        new admin_setting_configcheckbox('block_quickmail_downloads',
-            quickmail::_s('downloads'), quickmail::_s('downloads_desc'),
+        new admin_setting_configcheckbox(
+            'block_quickmail_downloads',
+            quickmail::_s('downloads'),
+            quickmail::_s('downloads_desc'),
             1
         )
     );
 
     $settings->add(
-        new admin_setting_configcheckbox('block_quickmail_addionalemail',
-            quickmail::_s('addionalemail'), quickmail::_s('addionalemail_desc'),
+        new admin_setting_configcheckbox(
+            'block_quickmail_addionalemail',
+            quickmail::_s('addionalemail'),
+            quickmail::_s('addionalemail_desc'),
             0
         )
     );
-
 }

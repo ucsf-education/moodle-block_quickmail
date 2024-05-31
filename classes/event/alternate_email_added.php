@@ -24,51 +24,74 @@
 
 namespace block_quickmail\event;
 
-defined('MOODLE_INTERNAL') || die();
+use coding_exception;
+use core\event\base;
+use moodle_exception;
+use moodle_url;
 
-class alternate_email_added extends \core\event\base {
-    protected function init() {
-        $this->data['crud'] = 'c'; // c(reate), r(ead), u(pdate), d(elete)
+/**
+ * Email added event handler class.
+ *
+ * @package    block_quickmail
+ * @copyright  2014 UC Regents
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class alternate_email_added extends base {
+    /**
+     * {@inheritdoc}
+     * @return void
+     */
+    protected function init(): void {
+        $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
     /**
      * Returns name of the event.
-     * 
+     *
      * @return string
+     * @throws coding_exception
      */
-    public static function get_name() {
+    public static function get_name(): string {
         return get_string('eventalternateemailadded', 'block_quickmail');
     }
- 
+
     /**
-     * Returns info on when a user with ID has viwed a control panel module (tab).
-     * 
+     * Returns info on when a user with ID has viewed a control panel module (tab).
+     *
      * @return string
      */
-    public function get_description() {
+    public function get_description(): string {
         return "The user with id '{$this->userid}' has added an alternate email  "
             . "{$this->other['address']}.";
     }
- 
+
     /**
      * Returns URL of the event.
-     * 
-     * @return \moodle_url
+     *
+     * @return moodle_url
+     * @throws moodle_exception
      */
-    public function get_url() {
-        return new \moodle_url('/blocks/quickmail/alternate.php', array(
-                    'courseid' => $this->courseid
-                ));
+    public function get_url(): moodle_url {
+        return new moodle_url('/blocks/quickmail/alternate.php', [
+                    'courseid' => $this->courseid,
+                ]);
     }
- 
+
     /**
-     * Legacy log.
-     * 
+     * Returns legacy log data.
+     *
      * @return array
+     * @throws coding_exception
+     * @throws moodle_exception
      */
-    public function get_legacy_logdata() {
-        return array($this->courseid, 'quickmail', 'add', $this->get_url(),
-            get_string('alternate', 'block_quickmail') . ' ' . $this->other['address']);
+    public function get_legacy_logdata(): array {
+        return [
+            $this->courseid,
+            'quickmail',
+            'add',
+            $this->get_url(),
+            get_string('alternate', 'block_quickmail') . ' ' . $this->other['address'],
+        ];
     }
 }

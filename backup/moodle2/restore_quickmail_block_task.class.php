@@ -15,23 +15,39 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Defines the restore task for quickmail.
+ *
  * @package    block_quickmail
  * @copyright  2008-2017 Louisiana State University
  * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once $CFG->dirroot . '/blocks/quickmail/backup/moodle2/restore_quickmail_stepslib.php';
+defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot . '/blocks/quickmail/backup/moodle2/restore_quickmail_stepslib.php');
+
+/**
+ * Quickmail restore task class.
+ *
+ * @package    block_quickmail
+ * @copyright  2008-2017 Louisiana State University
+ * @copyright  2008-2017 Adam Zapletal, Chad Mazilly, Philip Cali, Robert Russo
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class restore_quickmail_block_task extends restore_block_task {
-    public function history_exists() {
-        // Weird... folder doesn't exists
+    /**
+     * Checks if a backup file expected for config restoration exists in the expected location.
+     * @return bool TRUE if the backup file exists, FALSE otherwise.
+     */
+    public function history_exists(): bool {
+        // Weird... folder doesn't exists.
         $fullpath = $this->get_taskbasepath();
         if (empty($fullpath)) {
             return false;
         }
 
-        // Issue #45: trying to restore from a non-existent logfile
+        // Issue #45: trying to restore from a non-existent logfile.
         $fullpath = rtrim($fullpath, '/') . '/emaillogs_and_block_configuration.xml';
         if (!file_exists($fullpath)) {
             return false;
@@ -40,8 +56,17 @@ class restore_quickmail_block_task extends restore_block_task {
         return true;
     }
 
-    protected function define_my_settings() {
-        // Nothing to do
+    /**
+     * Define the settings that the quickmail block can have.
+     *
+     * @return void
+     * @throws backup_setting_exception
+     * @throws base_setting_exception
+     * @throws base_task_exception
+     * @throws coding_exception
+     */
+    protected function define_my_settings(): void {
+        // Nothing to do.
         if (!$this->history_exists()) {
             return;
         }
@@ -51,70 +76,96 @@ class restore_quickmail_block_task extends restore_block_task {
         $defaultvalue = false;
         $changeable = false;
 
-        $is_blocks = isset($rootsettings['blocks']) && $rootsettings['blocks'];
-        $is_users = isset($rootsettings['users']) && $rootsettings['users'];
+        $isblocks = isset($rootsettings['blocks']) && $rootsettings['blocks'];
+        $isusers = isset($rootsettings['users']) && $rootsettings['users'];
 
-        if ($is_blocks and $is_users) {
+        if ($isblocks && $isusers) {
             $defaultvalue = true;
             $changeable = true;
         }
 
-        $restore_history = new restore_generic_setting('restore_quickmail_history',
-            base_setting::IS_BOOLEAN, $defaultvalue);
-        $restore_history->set_ui(new backup_setting_ui_select(
-            $restore_history, get_string('restore_history', 'block_quickmail'),
-            array(1 => get_string('yes'), 0 => get_string('no'))
+        $restorehistory = new restore_generic_setting(
+            'restore_quickmail_history',
+            base_setting::IS_BOOLEAN,
+            $defaultvalue
+        );
+        $restorehistory->set_ui(new backup_setting_ui_select(
+            $restorehistory,
+            get_string('restore_history', 'block_quickmail'),
+            [1 => get_string('yes'), 0 => get_string('no')]
         ));
 
         if (!$changeable) {
-            $restore_history->set_value($defaultvalue);
-            $restore_history->set_status(backup_setting::LOCKED_BY_CONFIG);
-            $restore_history->set_visibility(backup_setting::HIDDEN);
+            $restorehistory->set_value($defaultvalue);
+            $restorehistory->set_status(backup_setting::LOCKED_BY_CONFIG);
+            $restorehistory->set_visibility(backup_setting::HIDDEN);
         }
 
-        $this->add_setting($restore_history);
-        $this->get_setting('users')->add_dependency($restore_history);
-        $this->get_setting('blocks')->add_dependency($restore_history);
+        $this->add_setting($restorehistory);
+        $this->get_setting('users')->add_dependency($restorehistory);
+        $this->get_setting('blocks')->add_dependency($restorehistory);
 
-        $overwrite_history = new restore_course_generic_setting('overwrite_quickmail_history', base_setting::IS_BOOLEAN, false);
-        $overwrite_history->set_ui(new backup_setting_ui_select(
-            $overwrite_history,
+        $overwritehistory = new restore_course_generic_setting('overwrite_quickmail_history', base_setting::IS_BOOLEAN, false);
+        $overwritehistory->set_ui(new backup_setting_ui_select(
+            $overwritehistory,
             get_string('overwrite_history', 'block_quickmail'),
-            array(1 => get_string('yes'), 0 => get_string('no'))
+            [1 => get_string('yes'), 0 => get_string('no')]
         ));
 
-        if ($this->get_target() != backup::TARGET_CURRENT_DELETING and $this->get_target() != backup::TARGET_EXISTING_DELETING) {
-
-            $overwrite_history->set_value(false);
-            $overwrite_history->set_status(backup_setting::LOCKED_BY_CONFIG);
+        if ($this->get_target() != backup::TARGET_CURRENT_DELETING && $this->get_target() != backup::TARGET_EXISTING_DELETING) {
+            $overwritehistory->set_value(false);
+            $overwritehistory->set_status(backup_setting::LOCKED_BY_CONFIG);
         }
 
-        $this->add_setting($overwrite_history);
-        $restore_history->add_dependency($overwrite_history);
+        $this->add_setting($overwritehistory);
+        $restorehistory->add_dependency($overwritehistory);
     }
 
+    /**
+     * Defines restore steps for the quickmail block.
+     *
+     * @return void
+     * @throws base_task_exception
+     */
     protected function define_my_steps() {
         if ($this->history_exists()) {
             $this->add_step(new restore_quickmail_log_structure_step(
-                'quickmail_structure', 'emaillogs_and_block_configuration.xml'
+                'quickmail_structure',
+                'emaillogs_and_block_configuration.xml'
             ));
         }
     }
 
-    public function get_fileareas() {
-        return array();
+    /**
+     * Defines the file areas that the quickmail block controls.
+     *
+     * @return array The file areas.
+     */
+    public function get_fileareas(): array {
+        return [];
     }
 
-    public function get_configdata_encoded_attributes() {
-        return array();
+    /**
+     * Define the configdata attributes that need to be processed by the contenttransformer.
+     *
+     * @return array The configdata attributes.
+     */
+    public function get_configdata_encoded_attributes(): array {
+        return [];
     }
 
-    static public function define_decode_contents() {
-        // TODO: perhaps needing this when moving away from email zip attaches
-        return array();
+    /**
+     * {@inheritdoc}
+     */
+    public static function define_decode_contents() {
+        // Todo: perhaps needing this when moving away from email zip attaches.
+        return [];
     }
 
-    static public function define_decode_rules() {
-        return array();
+    /**
+     * {@inheritdoc}
+     */
+    public static function define_decode_rules() {
+        return [];
     }
 }

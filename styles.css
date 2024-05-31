@@ -15,9 +15,6 @@
     max-width: 250px;
 }
 
-#page-block-quickmail .mform {
-}
-
 #page-block-quickmail .emailtable {
     background-color: inherit;
 }
@@ -49,18 +46,18 @@
     padding: 2px 0;
 }
 
-#page-block-quickmail .emailtable .r1 .c2, .emailtable .r0 .c1 {
+#page-block-quickmail .emailtable .r1 .c2,
+.emailtable .r0 .c1 {
     text-align: right;
 }
 
 #page-block-quickmail .mform fieldset.hidden > div {
-   clear:both;
-   float:none;
-   position:center;
-   overflow:hidden;
-   width:100%;
-   text-align:left;
-   margin:auto;
+    clear: both;
+    float: none;
+    overflow: hidden;
+    width: 100%;
+    text-align: left;
+    margin: auto;
 }
 
 #page-block-quickmail .mform input#id_subject {
