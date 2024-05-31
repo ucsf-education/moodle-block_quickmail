@@ -1,4 +1,4 @@
-@block @block_quickmail @WIP @javascript
+@block @block_quickmail @block_quickmail_course @WIP @javascript
 Feature: Verify course-level behavior of Quickmail
   In order to communicate with members of my course
   As an instructor
@@ -18,8 +18,9 @@ Feature: Verify course-level behavior of Quickmail
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
       | student2 | C1     | student        |
-    And I log in as "teacher1"
-    And I follow "Course 1"
+    And the following config values are set as admin:
+      | block_quickmail_addionalemail | 1 |
+    And I am on the "Course 1" course page logged in as teacher1
     And I turn editing mode on
     When I add the "Quickmail" block
     Then I should see "Compose New Email" in the "Quickmail" "block"
@@ -62,18 +63,15 @@ Feature: Verify course-level behavior of Quickmail
 
   Scenario: As an Instructor, configure Quickmail to allow/disallow student use.
     Given I log out
-    And I log in as "student1"
-    When I follow "Course 1"
+    And I am on the "Course 1" course page logged in as student1
     Then I should not see "Quickmail"
     And I log out
-    And I log in as "teacher1"
-    And I follow "Course 1"
+    And I am on the "Course 1" course page logged in as teacher1
     And I click on "Configuration" "link" in the "Quickmail" "block"
     When  I set the field "Allow students to use Quickmail" to "Yes"
     And I press "Save changes"
     And I log out
-    And I log in as "student1"
-    And I follow "Course 1"
+    And I am on the "Course 1" course page logged in as student1
     Then I should see "Compose New Email" in the "Quickmail" "block"
     And I click on "Compose New Email" "link" in the "Quickmail" "block"
     Then I should see "Potential Recipients"
@@ -84,6 +82,6 @@ Feature: Verify course-level behavior of Quickmail
       | Title     | Test Sig       |
       | Signature | this is my sig |
     And I press "Save changes"
-    And I follow "C1"
+    And I am on the "Course 1" course page
     When I follow "Compose New Email"
     Then the "Signatures" select box should contain "Test Sig"

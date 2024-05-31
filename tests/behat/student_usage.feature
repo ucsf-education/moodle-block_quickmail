@@ -1,9 +1,8 @@
-@block @block_quickmail @usage @javascript @block_quickmail_student_usage_feature
+@block @block_quickmail @block_quickmail_student_usage @javascript
 Feature: Control student usage of Quickmail
   In order to prevent or allow student usage of Quickmail block
   As a system administrator
-  I need be able to set a site config setting to control student usage or leave
-  the decision to the instructor
+  I need be able to set a site config setting to control student usage or leave the decision to the instructor.
 
   Background:
     Given the following "courses" exist:
@@ -17,9 +16,8 @@ Feature: Control student usage of Quickmail
       | user | course | role |
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
-#Then I wait "3" seconds
     And I log in as "admin"
-    And I follow "Course 1"
+    And I am on the "Course 1" course page
     And I turn editing mode on
     When I add the "Quickmail" block
     Then I should see "Compose New Email" in the "Quickmail" "block"
@@ -34,18 +32,18 @@ Feature: Control student usage of Quickmail
       | Allow students to use Quickmail | Never |
     And I log out
     When I log in as "teacher1"
-    And I follow "Course 1"
+    And I am on the "Course 1" course page
     And I click on "Configuration" "link" in the "Quickmail" "block"
     Then I should not see "Allow students to use Quickmail"
 
   Scenario: Allow access at course level, then disable it at site level
     Given I click on "Configuration" "link" in the "Quickmail" "block"
     Then I set the following fields to these values:
-        | Allow students to use Quickmail | Yes |
+      | Allow students to use Quickmail | Yes |
     And I press "Save changes"
     And I log out
     When I log in as "student1"
-    And I follow "Course 1"
+    And I am on the "Course 1" course page
     Then I should see "Compose New Email" in the "Quickmail" "block"
     And I click on "Compose New Email" "link" in the "Quickmail" "block"
     And I should see "Subject"
@@ -56,5 +54,5 @@ Feature: Control student usage of Quickmail
       | Allow students to use Quickmail | Never |
     And I log out
     When I log in as "student1"
-    And I follow "Course 1"
+    And I am on the "Course 1" course page
     Then I should not see "Quickmail"

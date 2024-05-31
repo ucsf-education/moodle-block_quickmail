@@ -1,4 +1,4 @@
-@block @block_quickmail
+@block @block_quickmail @block_quickmail_admin_email
 Feature: Verify Admin behavior for Quickmail
   In order to communicate with classes of Moodle users
   As an admin
@@ -18,7 +18,7 @@ Feature: Verify Admin behavior for Quickmail
       | student1 | C1     | student        |
     And I log in as "admin"
     And I am on homepage
-    When I follow "Turn editing on"
+    When I turn editing mode on
     And I add the "Quickmail" block
     Then I should see "Send Admin Email" in the "Quickmail" "block"
     And I am on homepage
@@ -51,7 +51,7 @@ Feature: Verify Admin behavior for Quickmail
     Given I set the field "courserole_rl" to "Student"
     And I press "Add filter"
     Then I should see "student1"
-    And  I follow "Home"
+    And I am on homepage
     And I follow "Send Admin Email"
     Then I should see "student1"
 
@@ -66,11 +66,11 @@ Feature: Verify Admin behavior for Quickmail
       | Body    | test_body    |
     And I press "Send Email"
     Then I should see "all messages sent successfully"
-    And I follow "Home"
+    And I am on homepage
     And I follow "Send Admin Email"
     Then I should not see "student1"
     And  I should not see "teacher1"
-    And I follow "Home"
+    And I am on homepage
     And I follow "View History"
     And I follow "Open Email"
     Then I should see "student1"
