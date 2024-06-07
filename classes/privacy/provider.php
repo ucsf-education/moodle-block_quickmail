@@ -58,7 +58,7 @@ class provider implements core_userlist_provider, data_provider, metadata_provid
                 'id' => 'privacy:metadata:block_quickmail_log:id',
                 'courseid' => 'privacy:metadata:block_quickmail_log:courseid',
                 'userid' => 'privacy:metadata:block_quickmail_log:userid',
-                'alterateid' => 'privacy:metadata:block_quickmail_log:alterateid',
+                'alternateid' => 'privacy:metadata:block_quickmail_log:alternateid',
                 'mailto' => 'privacy:metadata:block_quickmail_log:mailto',
                 'subject' => 'privacy:metadata:block_quickmail_log:subject',
                 'message' => 'privacy:metadata:block_quickmail_log:message',
@@ -69,18 +69,6 @@ class provider implements core_userlist_provider, data_provider, metadata_provid
                 'additional_emails' => 'privacy:metadata:block_quickmail_log:additional_emails',
             ],
             'privacy:metadata:block_quickmail_log',
-        );
-
-        $collection->add_database_table(
-            'block_quickmail_signatures',
-            [
-                'id' => 'privacy:metadata:block_quickmail_signatures:id',
-                'userid' => 'privacy:metadata:block_quickmail_signatures:userid',
-                'title' => 'privacy:metadata:block_quickmail_signatures:title',
-                'signature' => 'privacy:metadata:block_quickmail_signatures:signature',
-                'default_flag' => 'privacy:metadata:block_quickmail_signatures:default_flag',
-            ],
-            'privacy:metadata:block_quickmail_signatures',
         );
 
         $collection->add_database_table(
@@ -99,6 +87,18 @@ class provider implements core_userlist_provider, data_provider, metadata_provid
                 'additional_emails' => 'privacy:metadata:block_quickmail_drafts:additional_email',
             ],
             'privacy:metadata:block_quickmail_drafts'
+        );
+
+        $collection->add_database_table(
+            'block_quickmail_signatures',
+            [
+                'id' => 'privacy:metadata:block_quickmail_signatures:id',
+                'userid' => 'privacy:metadata:block_quickmail_signatures:userid',
+                'title' => 'privacy:metadata:block_quickmail_signatures:title',
+                'signature' => 'privacy:metadata:block_quickmail_signatures:signature',
+                'default_flag' => 'privacy:metadata:block_quickmail_signatures:default_flag',
+            ],
+            'privacy:metadata:block_quickmail_signatures',
         );
 
         return $collection;
@@ -292,14 +292,12 @@ EOD;
      * @throws dml_exception
      */
     public static function delete_data_for_users(approved_userlist $userlist): void {
-        $users = $userlist->get_users();
-        foreach ($users as $user) {
-            $contextlist = new approved_contextlist(
-                $user,
-                'block_quickmail',
-                [context_user::instance($user->id)->id]
-            );
-            self::delete_data_for_user($contextlist);
+        global $DB;
+        $context = $userlist->get_context();
+        if ($context instanceof context_user && in_array($context->instanceid, $userlist->get_userids())) {
+            $DB->delete_records('block_quickmail_log', ['userid' => $context->instanceid]);
+            $DB->delete_records('block_quickmail_drafts', ['userid' => $context->instanceid]);
+            $DB->delete_records('block_quickmail_signatures', ['userid' => $context->instanceid]);
         }
     }
 }
