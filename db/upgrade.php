@@ -266,5 +266,14 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         upgrade_block_savepoint(true, 2014042914, 'quickmail');
     }
 
+    if ($oldversion < 2024100401) {
+        $table = new xmldb_table('block_quickmail_signatures');
+        $field = new xmldb_field('title', XMLDB_TYPE_CHAR, '125', null, null, null, '');
+        $dbman->change_field_default($table, $field);
+        $field = new xmldb_field('default_flag', XMLDB_TYPE_INTEGER, '1', true, XMLDB_NOTNULL, null, '0');
+        $dbman->change_field_default($table, $field);
+        upgrade_block_savepoint(true, 2024100401, 'quickmail');
+    }
+
     return true;
 }
