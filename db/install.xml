@@ -29,9 +29,9 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="id" NEXT="title"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="125" NOTNULL="false" SEQUENCE="false"  PREVIOUS="userid" NEXT="signature"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="125" NOTNULL="false" SEQUENCE="false"  PREVIOUS="userid" DEFAULT="" NEXT="signature"/>
         <FIELD NAME="signature" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false"  PREVIOUS="title" NEXT="default_flag"/>
-        <FIELD NAME="default_flag" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"  PREVIOUS="signature"/>
+        <FIELD NAME="default_flag" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"  PREVIOUS="signature"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
