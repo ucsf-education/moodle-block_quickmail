@@ -275,5 +275,16 @@ function xmldb_block_quickmail_upgrade($oldversion): bool {
         upgrade_block_savepoint(true, 2024100401, 'quickmail');
     }
 
+    if ($oldversion < 2024100402) {
+        // Convert pre-existing NULL values for signature to empty strings.
+        $DB->execute("UPDATE {block_quickmail_signatures} SET signature = '' WHERE signature IS NULL");
+        // Make the signature column not nullable.
+        $table = new xmldb_table('block_quickmail_signatures');
+        $field = new xmldb_field('signature', XMLDB_TYPE_TEXT, 'medium', null, XMLDB_NOTNULL, null, null);
+        $dbman->change_field_notnull($table, $field);
+
+        upgrade_block_savepoint(true, 2024100402, 'quickmail');
+    }
+
     return true;
 }
