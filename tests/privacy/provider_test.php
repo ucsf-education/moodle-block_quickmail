@@ -456,6 +456,5 @@ final class provider_test extends provider_testcase {
         $this->assertEquals(1, $DB->count_records('block_quickmail_log', [ 'courseid' => $course->id, 'userid' => $user2->id ]));
         $this->assertEquals(1, $DB->count_records('block_quickmail_drafts', [ 'courseid' => $course->id, 'userid' => $user2->id ]));
         $this->assertEquals(1, $DB->count_records('block_quickmail_signatures', ['userid' => $user2->id ]));
-
     }
 }
