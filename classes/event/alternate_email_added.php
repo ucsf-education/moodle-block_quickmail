@@ -77,21 +77,4 @@ class alternate_email_added extends base {
                     'courseid' => $this->courseid,
                 ]);
     }
-
-    /**
-     * Returns legacy log data.
-     *
-     * @return array
-     * @throws coding_exception
-     * @throws moodle_exception
-     */
-    public function get_legacy_logdata(): array {
-        return [
-            $this->courseid,
-            'quickmail',
-            'add',
-            $this->get_url(),
-            get_string('alternate', 'block_quickmail') . ' ' . $this->other['address'],
-        ];
-    }
 }
