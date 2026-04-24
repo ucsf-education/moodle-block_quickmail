@@ -30,7 +30,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_quickmail_generator extends testing_block_generator {
-
     /**
      * Creates and returns a quickmail log (aka "sent message") record with the given data points.
      *
@@ -132,7 +131,6 @@ class block_quickmail_generator extends testing_block_generator {
 
         $id = $DB->insert_record('block_quickmail_drafts', $record);
         return $DB->get_record('block_quickmail_drafts', ['id' => $id]);
-
     }
 
     /**

@@ -163,7 +163,7 @@ EOD;
         $userid = $contextlist->get_user()->id;
 
         // Filter out any contexts that are not specific to the given user.
-        $contexts = array_filter($contextlist->get_contexts(), function($context) use($userid) {
+        $contexts = array_filter($contextlist->get_contexts(), function ($context) use ($userid) {
             return $context->contextlevel === CONTEXT_USER && $context->instanceid === $userid;
         });
 
@@ -246,7 +246,7 @@ EOD;
         $userid = $contextlist->get_user()->id;
 
         // Filter out any contexts that are not specific to the given user.
-        $contexts = array_filter($contextlist->get_contexts(), function($context) use($userid) {
+        $contexts = array_filter($contextlist->get_contexts(), function ($context) use ($userid) {
             return $context->contextlevel === CONTEXT_USER && $context->instanceid === $userid;
         });
 
